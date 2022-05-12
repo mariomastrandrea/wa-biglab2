@@ -1,11 +1,22 @@
 const express = require('express');
-const database = require('../models/Database');
 const router = express.Router();
-const db = require("../models/Database");
 
-router.get("/films", function(req, res, next) {
-    let db=database.getInstance();
-    res.status(200).send("ciao");
-});
+const {
+    getAllFilms,
+    getFilmsByFilter,
+    getFilm,
+    createFilm,
+    updateFilm,
+    setFilmFavorite,
+    deleteFilm
+} = require("../controller/FilmsController");
 
-module.exports=router;
+router.get("/", getAllFilms);
+router.get("/filter/:filter", getFilmsByFilter);
+router.get("/:filmId", getFilm);
+router.post("/", createFilm);
+router.put("/:filmId", updateFilm);
+router.patch("/:filmId", setFilmFavorite);
+router.delete("/:filmId", deleteFilm);
+
+module.exports = router;
