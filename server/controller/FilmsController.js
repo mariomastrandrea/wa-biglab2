@@ -1,3 +1,4 @@
+const res = require("express/lib/response");
 const getFilmDAOInstance = require("../dao/FilmDAO");
 const { isInt, isNum } = require("../utilities");
 const filmDAO = getFilmDAOInstance();
@@ -7,7 +8,7 @@ const Film = require("../models/Film");
 // GET /films
 async function getAllFilms(req, res) {
     try {
-        const films = await filmDAO.getAll()
+        const films = await filmDAO.getAll();
         res.status(200).json(films);
     }
     catch (err) {
@@ -18,13 +19,41 @@ async function getAllFilms(req, res) {
     }
 }
 
-/*
-TODO: functions to be implemented:
-    getFilmsByFilter,   (Simone)
-    getFilm,            (Simone)
-    setFilmFavorite,    (Benny)
-    deleteFilm          (Benny)
-*/
+// GET /films/:filmId
+async function getFilm(req, res) {
+    try {
+        const film = await filmDAO.getFilm(req.params.filmId);
+        if (film === undefined) {
+            res.status(404).end();
+        }
+        else {
+            res.status(200).json(film);
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            error: "Generic database error",
+        });
+    }
+}
+
+// GET /films/filter/:filter
+async function getFilmsByFilter(req, res) {
+    try {
+        const film = await filmDAO.getFilmByFilter(req.params.filter);
+        if (film === undefined) {
+            res.status(404).end();
+        }
+        else {
+            res.status(200).json(film);
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            error: "Generic database error",
+        });
+    }
+}
 
 // POST /films
 // request body: a json containing 'title'(string), 'favorite'(boolean), 'watchdate(string)' and 'rating(0-5)' properties
@@ -116,6 +145,12 @@ async function updateFilm(req, res) {
     }
 }
 
+/*
+TODO: functions to be implemented:
+    setFilmFavorite,    (Benny)
+    deleteFilm          (Benny)
+*/
+
 
 /* functions useful for validation purposes */
 
@@ -142,7 +177,7 @@ function watchdateIsValid(watchdate) {
             /^[\d]{4}-[\d]{2}-[\d]{2}$/.test(watchdate));
 }
 
-
+// integer in [0,5]
 function ratingIsValid(rating) {
     return isNum(rating) && isInt(rating) &&
         rating >= 0 && rating <= 5;
