@@ -7,8 +7,8 @@ const {
     getFilm,
     createFilm,
     updateFilm,
-    setFilmFavorite,    // TODO
-    deleteFilm          // TODO
+    setFilmFavorite,    
+    deleteFilm          
 } = require("../controller/FilmsController");
 
 router.get("/", getAllFilms);
@@ -16,7 +16,7 @@ router.get("/filter/:filter", getFilmsByFilter);
 router.get("/:filmId", getFilm);
 router.post("/", createFilm);
 router.put("/:filmId", updateFilm);
-router.patch("/:filmId", setFilmFavorite);  // TODO
-router.delete("/:filmId", deleteFilm);      // TODOs
+router.patch("/:filmId", setFilmFavorite);  
+router.delete("/:filmId", deleteFilm);     
 
 module.exports = router;

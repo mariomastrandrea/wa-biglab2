@@ -5,7 +5,6 @@ const userAPI = require("./api/UserAPI");
 const PORT = 3001;
 app = new express();
 app.use(express.json());
-
 app.use("/api/films", filmAPI);
 app.use("/api/users", userAPI);
 

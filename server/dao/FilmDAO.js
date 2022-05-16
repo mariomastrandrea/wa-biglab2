@@ -140,7 +140,18 @@ class FilmDAO {
         });
     }
 
-    //TODO: implement functions below
+    deleteFilm(id)
+    {
+        return new Promise((resolve, reject) => {
+            const sql = 'DELETE FROM films WHERE id=?';
+            this.#db.run(sql, [id], function (err) {
+                if (err) reject(err);
+                else resolve(true);
+            });
+
+        });
+    }
+
 }
 
 module.exports = FilmDAO.getFilmDAOInstance;

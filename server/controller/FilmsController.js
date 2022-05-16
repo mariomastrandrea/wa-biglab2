@@ -144,12 +144,56 @@ async function updateFilm(req, res) {
         });
     }
 }
+//PATCH /:filmId
+//basically it calls an update film function with the new Favorite setted
+async function setFilmFavorite(req,res){
+    try{
+        let { filmId } = req.params;
 
-/*
-TODO: functions to be implemented:
-    setFilmFavorite,    (Benny)
-    deleteFilm          (Benny)
-*/
+        if (!filmIdIsValid(filmId)) {
+            return res.status(422).json({
+                error: "Unprocessable Entity - Invalid URL parameter"
+            });
+        }
+        if(!favoriteIsValid(req.body.favorite)){
+            return res.status(422).json({
+                error: "Unprocessable Entity - Invalid favorite body parameter"
+            });
+        }
+        let film= await filmDAO.getFilm(filmId);
+        film.setFavorite(req.body.favorite);
+        await filmDAO.updateFilm(film);
+        return res.status(200).send("Favorite setted");
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({error: "Internal server Error"});
+    }
+}
+
+async function deleteFilm(req,res){
+    try{
+        let { filmId } = req.params;
+
+        if (!filmIdIsValid(filmId)) {
+            return res.status(422).json({
+                error: "Unprocessable Entity - Invalid URL parameter"
+            });
+        }
+
+   
+        await filmDAO.deleteFilm(filmId);
+        return res.status(204).send("No content");
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json({error: "Internal server Error"});
+    }
+
+
+}
+
+
 
 
 /* functions useful for validation purposes */
