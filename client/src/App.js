@@ -1,23 +1,32 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
-import { loadFilmLibrary, loadFilters, loadFilmHeaders } from "./FilmLibrary.js";
+import { loadFilters, loadFilmHeaders } from "./FilmLibrary.js";
 import Home from "./routes/Home";
 import NewFilmPage from "./routes/NewFilmPage";
 import EditFilmPage from "./routes/EditFilmPage";
+import { fetchAllFilms } from './API';
 
-const filmLibrary = loadFilmLibrary();
 const filmFilters = loadFilters();
 const filmHeaders = loadFilmHeaders();
 
 
 function App() {
    // states
-   const [films, setFilms] = useState(filmLibrary.films);
+   const [films, setFilms] = useState([]);
    const filters = useState(filmFilters)[0];
    const headers = useState(filmHeaders)[0];
+   const [loading, setLoading] = useState(true)
+
+   useEffect(() => {
+      const getFilms = async () => {
+         const films = await fetchAllFilms();
+         setFilms(films);
+      }
+      getFilms();
+   }, []);
 
    function addFilm(film) {
       setFilms((old) => [...old, film]);
