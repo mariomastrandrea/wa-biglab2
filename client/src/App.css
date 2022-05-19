@@ -1,0 +1,72 @@
+
+/* Navbar styles */
+#search-box {
+   width: 15rem;
+}
+
+/* sidebar styles */
+
+aside .list-group-item {
+   padding: .75rem 1rem;
+}
+
+aside .list-group-item.active {
+   background-color: #057;
+   border-color: unset;
+}
+
+aside .list-group-item:hover {
+   background-color: #def;
+}
+
+aside .list-group-item.active:hover {
+   background-color: #068;
+}
+
+/* table styles */
+
+main .table td, main .table th {
+   padding: 0.8rem;
+}
+
+/* set columns fixed width */
+
+#films-table td:nth-child(1) {
+   width: 31%;
+}
+
+#films-table td:nth-child(2),
+#films-table td:nth-child(3),
+#films-table td:nth-child(4) {
+   width: 24%;
+}
+
+/* set cursor on icons */
+.action-icon, .action-icon-wrapper > * {
+   cursor: pointer;
+}
+
+/* disable opacity on checkbox */
+
+.form-check-input:disabled {
+   opacity: unset;
+}
+
+/* circular button */
+
+button.circular-button {
+   border-radius: 50rem;
+   padding: 0.6em 1.0em;
+}
+
+/* red favorite films */
+
+.favorite-film-title {
+   color: red;
+}
+
+/* remove bootstrap blue color of <a> tag */
+
+a {
+   color: inherit
+}
