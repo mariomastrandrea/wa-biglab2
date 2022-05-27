@@ -8,13 +8,7 @@ function FilmRows(props) {
    let library = props.films;
 
    return (
-      library.filter(film => film.filter(props.activeFilter))  
-         .sort((film1, film2) => {  // sort films in chronological order (from the last seen to the oldest one)
-            if(!film2.watchdate) return -1;
-            if(!film1.watchdate) return 1;
-            return film2.watchdate.diff(film1.watchdate, "d");
-         })
-         .map((film) =>
+      library.map((film) =>
             <FilmRow setFilmFavorite={props.setFilmFavorite} setFilmRating={props.setFilmRating} 
                deleteFilm={props.deleteFilm} film={film} key={`film-${film.id}`} />)
    );

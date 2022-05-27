@@ -13,7 +13,7 @@ function FilmTable(props) {
          <tbody>
             <FilmRows setFilmFavorite={props.setFilmFavorite} setFilmRating={props.setFilmRating} 
                deleteFilm={props.deleteFilm} films={props.films} 
-               activeFilter={props.activeFilter} key={`filter-${props.activeFilter}`}/>
+               key={`filter-${props.activeFilter}`}/>
          </tbody>
       </Table>
    );

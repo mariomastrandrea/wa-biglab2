@@ -7,7 +7,7 @@ import { loadFilters, loadFilmHeaders } from "./FilmLibrary.js";
 import Home from "./routes/Home";
 import NewFilmPage from "./routes/NewFilmPage";
 import EditFilmPage from "./routes/EditFilmPage";
-import { fetchAllFilms } from './API';
+import { fetchAllFilms, fetchFilteredFilms } from './API';
 
 const filmFilters = loadFilters();
 const filmHeaders = loadFilmHeaders();
@@ -20,14 +20,15 @@ function App() {
     const headers = useState(filmHeaders)[0];
     const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
+    //get all films
+    /*useEffect(() => {
         const getFilms = async () => {
-            const films = await fetchAllFilms();
+            const films = await fetchFilteredFilms("all");
             setFilms(films);
             setLoading(false);
         }
         getFilms();
-    }, []);
+    }, []);*/
 
     function addFilm(film) {
         setFilms((old) => [...old, film]);
@@ -83,6 +84,8 @@ function App() {
                                 headers={headers}
                                 films={films}
                                 activeFilter={"all"}
+                                setFilms={setFilms}
+                                setLoading={setLoading}
                             />
                         } />
 
@@ -94,6 +97,8 @@ function App() {
                                 deleteFilm={deleteFilm}
                                 headers={headers}
                                 films={films}
+                                setFilms={setFilms}
+                                setLoading={setLoading}
                             />
                         } />
 

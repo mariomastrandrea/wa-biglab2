@@ -6,6 +6,8 @@ import ErrorBox from '../components/ErrorBox';
 import FilmTable from '../components/filmComponents/FilmTable';
 import FilmLibraryNavbar from '../components/filmComponents/FilmLibraryNavbar.js';
 import { revertFromSnakeCase } from "../utilities.js"
+import { useEffect, useState } from 'react';
+import { fetchFilteredFilms } from "../API";
 
 function Home(props) {
    const param = useParams();
@@ -17,6 +19,18 @@ function Home(props) {
    const headers = props.headers;
    const films = props.films;
    const setFilmRating = props.setFilmRating;
+   const setFilms = props.setFilms;
+   const setLoading = props.setLoading;
+
+   useEffect(() => {
+      const getFilms = async () => {
+         const films = await fetchFilteredFilms(activeFilter);
+         setFilms(films);
+         setLoading(false);
+     }
+     getFilms();
+     console.log(activeFilter)
+   }, [activeFilter]);
 
    let pageContent;
 
