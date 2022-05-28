@@ -1,35 +1,39 @@
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
+import { useEffect } from 'react';
 import { useParams } from "react-router-dom";
+import { revertFromSnakeCase } from "../utilities.js"
 import FiltersBox from '../components/FiltersBox';
 import AddButton from '../components/AddButton';
 import ErrorBox from '../components/ErrorBox';
 import FilmTable from '../components/filmComponents/FilmTable';
 import FilmLibraryNavbar from '../components/filmComponents/FilmLibraryNavbar.js';
-import { revertFromSnakeCase } from "../utilities.js"
-import { useEffect, useState } from 'react';
-import { fetchFilteredFilms } from "../API";
 
 function Home(props) {
    const param = useParams();
 
-   const filters = props.filters;
+   const {
+      loading, setLoading,
+      errorMessage, setErrorMessage,
+      filters, headers,
+      getFilmsFilteredBy,
+      films, deleteFilm,
+      setFilmRating, setFilmFavorite
+   } = props;
+
    const activeFilter = props.activeFilter || param.activeFilter?.toLowerCase();
-   const setFilmFavorite = props.setFilmFavorite;
-   const deleteFilm = props.deleteFilm;
-   const headers = props.headers;
-   const films = props.films;
-   const setFilmRating = props.setFilmRating;
-   const setFilms = props.setFilms;
-   const setLoading = props.setLoading;
 
    useEffect(() => {
-      const getFilms = async () => {
-         const films = await fetchFilteredFilms(activeFilter);
-         setFilms(films);
-         setLoading(false);
-     }
-     getFilms();
-     console.log(activeFilter)
+      setLoading(true);
+
+      setTimeout(async () => {   
+         // to simulate a long request
+         getFilmsFilteredBy(activeFilter).then(() => setLoading(false)).catch(() => {
+            setErrorMessage("An error occurred retrieving film from the server");
+            setLoading(false);
+         });
+      }, 1000);
+
+      // eslint-disable-next-line
    }, [activeFilter]);
 
    let pageContent;
@@ -52,10 +56,20 @@ function Home(props) {
                      <h1>{revertFromSnakeCase(activeFilter)}</h1>
                   </Row>
 
+                  {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+
                   <Row as="main" className="px-4">
-                     <FilmTable setFilmFavorite={setFilmFavorite} setFilmRating={setFilmRating}
+                     <FilmTable setFilmFavorite={setFilmFavorite} setFilmRating={setFilmRating} loading={loading}
                         deleteFilm={deleteFilm} headers={headers} films={films} activeFilter={activeFilter} />
                   </Row>
+
+                  {loading ?
+                     <Row className="p-4 d-flex justify-content-center">
+                        <Spinner className="me-5" animation="border" role="status">
+                           <span className="visually-hidden">Loading...</span>
+                        </Spinner>
+                     </Row> : <></>
+                  }
 
                   <Row className="m-1">
                      <AddButton>+</AddButton>

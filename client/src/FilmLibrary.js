@@ -25,6 +25,7 @@ function Film(id, title, favorite = false, watchdate, rating) {
    };
 }
 
+/*
 function FilmLibrary() {
    this.films = [];
 
@@ -58,6 +59,7 @@ function loadFilmLibrary() {
 
    return filmLibrary;
 }
+*/
 
 function loadFilters() {
    const filters = [
@@ -82,4 +84,4 @@ function loadFilmHeaders() {
    return filmHeaders;
 }
 
-export { Film, loadFilmLibrary, loadFilters, loadFilmHeaders };
+export { Film, loadFilters, loadFilmHeaders };

@@ -9,8 +9,8 @@ function FilmRows(props) {
 
    return (
       library.map((film) =>
-            <FilmRow setFilmFavorite={props.setFilmFavorite} setFilmRating={props.setFilmRating} 
-               deleteFilm={props.deleteFilm} film={film} key={`film-${film.id}`} />)
+         <FilmRow setFilmFavorite={props.setFilmFavorite} setFilmRating={props.setFilmRating}
+            deleteFilm={props.deleteFilm} film={film} key={`film-${film.id}`} />)
    );
 }
 
@@ -22,9 +22,9 @@ function FilmRow(props) {
    return (
       <tr>
          <td key="film-title">
-            <PencilSquare onClick={() => navigate(`/editFilm/${film.id}`)} 
+            <PencilSquare onClick={() => navigate(`/editFilm/${film.id}`)}
                className="me-1 action-icon" size="0.95em" />
-            <Trash onClick={() => props.deleteFilm(film.id)} 
+            <Trash onClick={() => props.deleteFilm(film.id)}
                className="me-3 action-icon" size="0.95em" />
             <span className={filmTitleClass}>{film.title}</span>
          </td>
@@ -49,11 +49,11 @@ function Rating(props) {
       stars.push(i < hoverRating ?
          <StarFill color={rating === hoverRating ? "current-color" : "#0d6efd"}
             onMouseOut={() => setHoverRating(rating)} onMouseOver={() => setHoverRating(i + 1)}
-            onClick={() => props.setFilmRating(props.film.id, i + 1)} 
-            key={`${i+1}-star`} className="action-icon" /> :
+            onClick={() => props.setFilmRating(props.film.id, i + 1)}
+            key={`${i + 1}-star`} className="action-icon" /> :
          <Star onMouseOut={() => setHoverRating(rating)} onMouseOver={() => setHoverRating(i + 1)}
-            onClick={() => props.setFilmRating(props.film.id, i + 1)} 
-            key={`${i+1}-star`} className="action-icon" />
+            onClick={() => props.setFilmRating(props.film.id, i + 1)}
+            key={`${i + 1}-star`} className="action-icon" />
       );
    }
 

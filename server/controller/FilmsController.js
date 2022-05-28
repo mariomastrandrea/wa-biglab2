@@ -40,7 +40,7 @@ async function getFilm(req, res) {
 // GET /films/filter/:filter
 async function getFilmsByFilter(req, res) {
     try {
-        const film = await filmDAO.getFilmByFilter(req.params.filter);
+        const film = await filmDAO.getFilmsByFilter(req.params.filter);
         if (film === undefined) {
             res.status(404).end();
         }

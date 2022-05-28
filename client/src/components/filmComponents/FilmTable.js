@@ -4,17 +4,20 @@ import { Table } from 'react-bootstrap'
 
 
 function FilmTable(props) {
-
    return (
       <Table hover className="mx-2" id="films-table">
          <thead>
             <FilmHeadersRow headers={props.headers} />
          </thead>
+
          <tbody>
-            <FilmRows setFilmFavorite={props.setFilmFavorite} setFilmRating={props.setFilmRating} 
-               deleteFilm={props.deleteFilm} films={props.films} 
-               key={`filter-${props.activeFilter}`}/>
+            {props.loading ? <></> :
+               <FilmRows setFilmFavorite={props.setFilmFavorite} setFilmRating={props.setFilmRating}
+                  deleteFilm={props.deleteFilm} films={props.films}
+                  key={`filter-${props.activeFilter}`} />
+            }
          </tbody>
+
       </Table>
    );
 }

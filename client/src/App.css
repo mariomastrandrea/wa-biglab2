@@ -31,13 +31,17 @@ main .table td, main .table th {
 
 /* set columns fixed width */
 
-#films-table td:nth-child(1) {
+#films-table td:nth-child(1),
+#films-table th:nth-child(1) {
    width: 31%;
 }
 
 #films-table td:nth-child(2),
 #films-table td:nth-child(3),
-#films-table td:nth-child(4) {
+#films-table td:nth-child(4),
+#films-table th:nth-child(2),
+#films-table th:nth-child(3),
+#films-table th:nth-child(4) {
    width: 24%;
 }
 

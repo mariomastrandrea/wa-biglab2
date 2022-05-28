@@ -1,12 +1,13 @@
-import { Row } from "react-bootstrap";
+import { Row, Spinner } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import ErrorBox from "../components/ErrorBox";
 import FilmLibraryNavbar from "../components/filmComponents/FilmLibraryNavbar";
 import FilmForm from "../components/filmComponents/FilmForm";
 
 function EditFilmPage(props) {
-   const { filmId } = useParams();
-   const film = props.films.find(film => film.id === filmId); 
+   const filmId = Number(useParams().filmId);
+   const film = props.getFilm(filmId);
+   const loading = props.loading;
 
    return (
       <>
@@ -14,9 +15,17 @@ function EditFilmPage(props) {
             <FilmLibraryNavbar title="Edit film" />
          </Row>
 
-         {!film ?
-            <ErrorBox message="ERROR: please search a correct film ID" /> : 
-            <FilmForm editFilm={props.editFilm} film={film} />
+         {loading ?
+            <Row className="p-5 mt-5 d-flex justify-content-center">
+               <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Loading...</span>
+               </Spinner>
+            </Row> :
+
+            (!film ?
+               <ErrorBox message="ERROR: please search a correct film ID" /> :
+               <FilmForm editFilm={props.editFilm} film={film} />
+            )
          }
       </>
    );

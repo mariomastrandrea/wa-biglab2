@@ -46,8 +46,10 @@ function FilmForm(props) {
          <Row className="mt-3">
             <Col></Col>
             <Col as="main" xs={5} className='my-2 p-2'>
-               <div style={{ borderColor: 'grey', borderWidth: 2, borderStyle: 'dotted', 
-                  borderRadius: 10, padding: '0.5em 1.75em' }}>
+               <div style={{
+                  borderColor: 'grey', borderWidth: 2, borderStyle: 'dotted',
+                  borderRadius: 10, padding: '0.5em 1.75em'
+               }}>
                   <Form onSubmit={handleSubmit}>
                      <Form.Group className='my-3'>
                         <Form.Label>Id</Form.Label>

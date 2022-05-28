@@ -9,117 +9,135 @@ import NewFilmPage from "./routes/NewFilmPage";
 import EditFilmPage from "./routes/EditFilmPage";
 import { fetchAllFilms, fetchFilteredFilms } from './API';
 
-const filmFilters = loadFilters();
-const filmHeaders = loadFilmHeaders();
-
-
 function App() {
-    // states
-    const [films, setFilms] = useState([]);
-    const filters = useState(filmFilters)[0];
-    const headers = useState(filmHeaders)[0];
-    const [loading, setLoading] = useState(true)
+   // states
+   const [films, setFilms] = useState([]);
+   const [filters, setFilters] = useState([]);
+   const [headers, setHeaders] = useState([]);
+   const [loading, setLoading] = useState(true);
+   const [errorMessage, setErrorMessage] = useState("");
 
-    //get all films
-    /*useEffect(() => {
-        const getFilms = async () => {
-            const films = await fetchFilteredFilms("all");
-            setFilms(films);
+   async function getFilmsFilteredBy(filter) {
+      const films = filter === 'all' ?
+         await fetchAllFilms() : await fetchFilteredFilms(filter);
+      setFilms(films);
+   }
+
+   // at first, get all films from the server
+   useEffect(() => {
+      setLoading(true);
+
+      setTimeout(async () => {   // simulate a long request
+         getFilmsFilteredBy('all').then(() => setLoading(false)).catch(() => {
+            setErrorMessage("An error occurred retrieving film from the server");
             setLoading(false);
-        }
-        getFilms();
-    }, []);*/
+         });
+      }, 2000);
 
-    function addFilm(film) {
-        setFilms((old) => [...old, film]);
-    }
+      setFilters(loadFilters());
+      setHeaders(loadFilmHeaders());
+   }, []);
 
-    function deleteFilm(id) {
-        setFilms((old) => old.filter((film) => film.id !== id));
-    }
+   // TODO: integrate API calls below
 
-    function setFilmRating(id, newRating) {
-        setFilms((old) => old.map(film => {
-            let newFilm = { ...film };
+   function addFilm(film) {
+      setFilms(old => [...old, film]);
+   }
 
-            if (film.id === id)
-                newFilm.rating = newRating;
+   function deleteFilm(id) {
+      setFilms(old => old.filter((film) => film.id !== id));
+   }
 
-            return newFilm;
-        }));
-    }
+   function setFilmRating(id, newRating) {
+      setFilms(old => old.map(film => {
+         let newFilm = { ...film };
 
-    function setFilmFavorite(id, favorite) {
-        setFilms((old) => old.map(film => {
-            let newFilm = { ...film };
+         if (film.id === id)
+            newFilm.rating = newRating;
 
-            if (film.id === id)
-                newFilm.favorite = favorite;
+         return newFilm;
+      }));
+   }
 
-            return newFilm;
-        }));
-    }
+   function setFilmFavorite(id, favorite) {
+      setFilms(old => old.map(film => {
+         let newFilm = { ...film };
 
-    function editFilm(film) {
-        setFilms((old) => old.map(oldFilm => {
-            if (oldFilm.id === film.id)
-                return film;
+         if (film.id === id)
+            newFilm.favorite = favorite;
 
-            return oldFilm;
-        }))
-    }
+         return newFilm;
+      }));
+   }
 
-    // render the page only if the films loading is finished
-    return (
-        <Container fluid className="vh-100">
-            <BrowserRouter>
-                <Routes>
-                    {!loading ? <>
-                        <Route index element={
-                            <Home
-                                filters={filters}
-                                setFilmFavorite={setFilmFavorite}
-                                setFilmRating={setFilmRating}
-                                deleteFilm={deleteFilm}
-                                headers={headers}
-                                films={films}
-                                activeFilter={"all"}
-                                setFilms={setFilms}
-                                setLoading={setLoading}
-                            />
-                        } />
+   function editFilm(film) {
+      setFilms(old => old.map(oldFilm => {
+         if (oldFilm.id === film.id)
+            return film;
 
-                        <Route path="/:activeFilter" element={
-                            <Home
-                                filters={filters}
-                                setFilmFavorite={setFilmFavorite}
-                                setFilmRating={setFilmRating}
-                                deleteFilm={deleteFilm}
-                                headers={headers}
-                                films={films}
-                                setFilms={setFilms}
-                                setLoading={setLoading}
-                            />
-                        } />
+         return oldFilm;
+      }))
+   }
 
-                        <Route path="/addFilm" element={
-                            <NewFilmPage
-                                addFilm={addFilm}
-                            />
-                        } />
+   async function getFilm(id) {
+      return films.find(f => f.id === id);
+   };
 
-                        <Route path="/editFilm/:filmId" element={
-                            <EditFilmPage
-                                editFilm={editFilm}
-                                films={films}
-                            />
-                        } />
-                        </> : <></>
-                    }
-                </Routes>
-            </BrowserRouter>
-        </Container>
-    );
+   // render the page only if the films loading is finished
+   return (
+      <BrowserRouter>
+         <Container fluid className="vh-100">
+            <Routes>
+               <Route index element={
+                  <Home
+                     filters={filters}
+                     activeFilter={"all"}
+                     headers={headers}
+                     films={films}
+                     setFilmFavorite={setFilmFavorite}
+                     setFilmRating={setFilmRating}
+                     deleteFilm={deleteFilm}
+                     getFilmsFilteredBy={getFilmsFilteredBy}
+                     loading={loading}
+                     setLoading={setLoading}
+                     errorMessage={errorMessage}
+                     setErrorMessage={setErrorMessage}
+                  />
+               } />
+
+               <Route path="/:activeFilter" element={
+                  <Home
+                     filters={filters}
+                     headers={headers}
+                     films={films}
+                     setFilmFavorite={setFilmFavorite}
+                     setFilmRating={setFilmRating}
+                     deleteFilm={deleteFilm}
+                     getFilmsFilteredBy={getFilmsFilteredBy}
+                     loading={loading}
+                     setLoading={setLoading}
+                     errorMessage={errorMessage}
+                     setErrorMessage={setErrorMessage}
+                  />
+               } />
+
+               <Route path="/addFilm" element={
+                  <NewFilmPage
+                     addFilm={addFilm}
+                  />
+               } />
+
+               <Route path="/editFilm/:filmId" element={
+                  <EditFilmPage
+                     editFilm={editFilm}
+                     getFilm={getFilm}
+                     loading={loading}
+                  />
+               } />
+            </Routes>
+         </Container>
+      </BrowserRouter>
+   );
 }
 
 export default App;
