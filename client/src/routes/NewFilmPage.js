@@ -3,6 +3,8 @@ import FilmForm from "../components/filmComponents/FilmForm";
 import FilmLibraryNavbar from "../components/filmComponents/FilmLibraryNavbar";
 
 function NewFilmPage(props) {
+   props.setLoading(false);
+
    return (
       <>
          <Row as="header">

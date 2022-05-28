@@ -7,7 +7,8 @@ import { loadFilters, loadFilmHeaders } from "./FilmLibrary.js";
 import Home from "./routes/Home";
 import NewFilmPage from "./routes/NewFilmPage";
 import EditFilmPage from "./routes/EditFilmPage";
-import { fetchAllFilms, fetchFilteredFilms } from './API';
+import { fetchAllFilms, fetchFilteredFilms, storeNewFilm, 
+   updateFilm, setFilmFavorite, deleteFilm, fetchFilm } from './API';
 
 function App() {
    // states
@@ -25,24 +26,23 @@ function App() {
 
    // at first, get all films from the server
    useEffect(() => {
-      setLoading(true);
-
-      setTimeout(async () => {   // simulate a long request
-         getFilmsFilteredBy('all').then(() => setLoading(false)).catch(() => {
-            setErrorMessage("An error occurred retrieving film from the server");
-            setLoading(false);
-         });
-      }, 2000);
-
       setFilters(loadFilters());
       setHeaders(loadFilmHeaders());
    }, []);
 
-   // TODO: integrate API calls below
-
-   function addFilm(film) {
-      setFilms(old => [...old, film]);
+   async function addFilm(film) {
+      await storeNewFilm(film);
    }
+
+   async function editFilm(film) {
+      await editFilm(film);
+   }
+
+   async function getFilm(id) {
+      return await fetchFilm(id);
+   };
+
+   // TODO: integrate API calls below
 
    function deleteFilm(id) {
       setFilms(old => old.filter((film) => film.id !== id));
@@ -69,19 +69,6 @@ function App() {
          return newFilm;
       }));
    }
-
-   function editFilm(film) {
-      setFilms(old => old.map(oldFilm => {
-         if (oldFilm.id === film.id)
-            return film;
-
-         return oldFilm;
-      }))
-   }
-
-   async function getFilm(id) {
-      return films.find(f => f.id === id);
-   };
 
    // render the page only if the films loading is finished
    return (
@@ -124,6 +111,7 @@ function App() {
                <Route path="/addFilm" element={
                   <NewFilmPage
                      addFilm={addFilm}
+                     setLoading={setLoading}
                   />
                } />
 
@@ -131,7 +119,9 @@ function App() {
                   <EditFilmPage
                      editFilm={editFilm}
                      getFilm={getFilm}
+                     setLoading={setLoading}
                      loading={loading}
+                     errorMessage={errorMessage}
                   />
                } />
             </Routes>

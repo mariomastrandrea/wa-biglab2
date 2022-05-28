@@ -21,14 +21,16 @@ function FilmForm(props) {
    const [rating, setRating] = useState(defaultValues['rating']);
    const navigate = useNavigate();
 
-   const handleSubmit = (event) => {
+   const handleSubmit = async (event) => {
       event.preventDefault();
       const newFilm = new Film(id, title, favorite, watchdate, rating);
 
-      if (props.film) /* edit mode */
-         props.editFilm(newFilm);
-      else            /* add mode */
-         props.addFilm(newFilm);
+      if (props.film) {/* edit mode */
+         await props.editFilm(newFilm);
+      }
+      else {           /* add mode */
+         await props.addFilm(newFilm);
+      }
 
       navigate("/");
    }

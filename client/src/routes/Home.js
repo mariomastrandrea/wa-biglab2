@@ -8,6 +8,7 @@ import ErrorBox from '../components/ErrorBox';
 import FilmTable from '../components/filmComponents/FilmTable';
 import FilmLibraryNavbar from '../components/filmComponents/FilmLibraryNavbar.js';
 
+
 function Home(props) {
    const param = useParams();
 
@@ -26,12 +27,14 @@ function Home(props) {
       setLoading(true);
 
       setTimeout(async () => {   
+         setErrorMessage(""); // clear error message
+
          // to simulate a long request
          getFilmsFilteredBy(activeFilter).then(() => setLoading(false)).catch(() => {
-            setErrorMessage("An error occurred retrieving film from the server");
+            setErrorMessage("An error occurred retrieving films from the server");
             setLoading(false);
          });
-      }, 1000);
+      }, 2000);
 
       // eslint-disable-next-line
    }, [activeFilter]);
