@@ -1,4 +1,4 @@
-import { Row, Spinner } from "react-bootstrap";
+import { Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
 import ErrorBox from "../components/ErrorBox";
 import FilmLibraryNavbar from "../components/filmComponents/FilmLibraryNavbar";
@@ -9,7 +9,12 @@ import SpinnerBox from "../components/SpinnerBox";
 function EditFilmPage(props) {
    const filmId = Number(useParams().filmId);
    const [film, setFilm] = useState(null);
-   const { loading, errorMessage, getFilm, setLoading, setErrorMessage } = props;
+
+   const { 
+      loading, errorMessage, getFilm, 
+      setLoading, setErrorMessage, 
+      setSuccessMessage 
+   } = props;
 
    useEffect(() => {
       getFilm(filmId).then(film => {
@@ -25,7 +30,8 @@ function EditFilmPage(props) {
 
    const headerContent =
       <Row as="header">
-         <FilmLibraryNavbar title="Edit film" setLoading={setLoading} setErrorMessage={setErrorMessage} />
+         <FilmLibraryNavbar title="Edit film" setLoading={setLoading} 
+            setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
       </Row>
 
    if (loading && !film) { // if the page is loading -> display only the spinner
@@ -39,8 +45,8 @@ function EditFilmPage(props) {
       return <>
          {headerContent}
          <SpinnerBox small={true} />
-         <FilmForm editMode={true} editFilm={props.editFilm} film={film}
-            setLoading={setLoading} setErrorMessage={setErrorMessage} loading={loading} />
+         <FilmForm editMode={true} editFilm={props.editFilm} film={film} setLoading={setLoading}
+            setErrorMessage={setErrorMessage} loading={loading} setSuccessMessage={setSuccessMessage} />
       </>;
    }
 
@@ -55,7 +61,7 @@ function EditFilmPage(props) {
          {headerContent}
          <ErrorBox message={errorMessage} />
          <FilmForm editMode={true} editFilm={props.editFilm} film={film}
-            setLoading={setLoading} setErrorMessage={setErrorMessage} />
+            setLoading={setLoading} setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
       </>;
 
    // * there isn't any error here *
@@ -71,7 +77,7 @@ function EditFilmPage(props) {
       <>
          {headerContent}
          <FilmForm editMode={true} editFilm={props.editFilm} film={film}
-            setLoading={setLoading} setErrorMessage={setErrorMessage} />
+            setLoading={setLoading} setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
       </>
    );
 }

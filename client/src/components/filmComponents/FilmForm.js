@@ -7,7 +7,8 @@ function FilmForm(props) {
    const {
       film, setLoading, 
       setErrorMessage, editMode,
-      editFilm, addFilm 
+      editFilm, addFilm,
+      setSuccessMessage 
    } = props;
 
    const defaultValues = {
@@ -32,12 +33,17 @@ function FilmForm(props) {
 
       setLoading(true);
       setErrorMessage("");
+      setSuccessMessage("");
 
       try {
-         if (editMode) /* edit mode */
+         if (editMode)  { /* edit mode */
             await editFilm(newFilm);
-         else            /* add mode */
+            setSuccessMessage(`The film "${film.title}" was successfully updated`)
+         }
+         else {           /* add mode */
             await addFilm(newFilm);
+            setSuccessMessage(`The film "${film.title}" was successfully added`);
+         }
       }
       catch(error) {
          setErrorMessage("Something went wrong with your request");
@@ -59,6 +65,7 @@ function FilmForm(props) {
    const handleCancel = () => {
       setLoading(true);
       setErrorMessage("");
+      setSuccessMessage("");
       navigate("/");
    }
 

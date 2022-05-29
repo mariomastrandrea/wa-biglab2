@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 
 
 function FilmLibraryNavbar(props) {
-   const { title, setLoading, setErrorMessage } = props;
+   const { title, setLoading, setErrorMessage, setSuccessMessage } = props;
    const navigate = useNavigate();
 
    function goToHome() {
       setLoading(true);
       setErrorMessage("");
+      setSuccessMessage("");
       navigate("/");
    }
 

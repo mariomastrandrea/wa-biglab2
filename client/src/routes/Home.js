@@ -1,4 +1,4 @@
-import { Container, Row, Col, Alert, Spinner } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import { revertFromSnakeCase } from "../utilities.js"
@@ -8,6 +8,7 @@ import ErrorBox from '../components/ErrorBox';
 import FilmTable from '../components/filmComponents/FilmTable';
 import FilmLibraryNavbar from '../components/filmComponents/FilmLibraryNavbar.js';
 import SpinnerBox from '../components/SpinnerBox.js';
+import SuccessBox from '../components/SuccessBox.js';
 
 
 function Home(props) {
@@ -19,7 +20,8 @@ function Home(props) {
       filters, headers,
       getFilmsFilteredBy,
       films, deleteFilm,
-      setFilmRating, setFilmFavorite
+      setFilmRating, setFilmFavorite,
+      successMessage, setSuccessMessage
    } = props;
 
    const activeFilter = props.activeFilter || param.activeFilter?.toLowerCase();
@@ -47,7 +49,8 @@ function Home(props) {
          <Row className='h-100'>
             {/* sidebar */}
             <Col as="aside" className="bg-light col-3 p-4 h-100">
-               <FiltersBox className="h-100" filters={filters} active={activeFilter} setErrorMessage={setErrorMessage} />
+               <FiltersBox className="h-100" filters={filters} active={activeFilter} 
+                  setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
             </Col>
 
             {/* main content */}
@@ -57,7 +60,8 @@ function Home(props) {
                      <h1>{revertFromSnakeCase(activeFilter)}</h1>
                   </Row>
 
-                  {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+                  {errorMessage && <ErrorBox>{errorMessage}</ErrorBox>}
+                  {successMessage && <SuccessBox>{successMessage}</SuccessBox>}
 
                   <Row as="main" className="px-4">
                      <FilmTable setFilmFavorite={setFilmFavorite} setFilmRating={setFilmRating} loading={loading}
@@ -76,7 +80,8 @@ function Home(props) {
    return (
       <>
          <Row as="header">
-            <FilmLibraryNavbar setLoading={setLoading} setErrorMessage={setErrorMessage} />
+            <FilmLibraryNavbar setLoading={setLoading} setErrorMessage={setErrorMessage} 
+               setSuccessMessage={setSuccessMessage} />
          </Row>
          {pageContent}
       </>

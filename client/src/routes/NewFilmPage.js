@@ -8,7 +8,8 @@ import SpinnerBox from "../components/SpinnerBox";
 function NewFilmPage(props) {
    const { 
       setLoading, loading, 
-      setErrorMessage, errorMessage 
+      setErrorMessage, errorMessage, 
+      setSuccessMessage
    } = props;
 
    useEffect(() => {
@@ -19,14 +20,16 @@ function NewFilmPage(props) {
    return (
       <>
          <Row as="header">
-            <FilmLibraryNavbar title="Add new film" setLoading={setLoading} setErrorMessage={setErrorMessage} />
+            <FilmLibraryNavbar title="Add new film" setLoading={setLoading} 
+               setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
          </Row>
 
          { // if there was a connection error -> show the error message
             errorMessage && <ErrorBox message={errorMessage} />}
       
          {loading && <SpinnerBox small={true} /> }
-         <FilmForm addFilm={props.addFilm} setLoading={setLoading} setErrorMessage={setErrorMessage} />
+         <FilmForm addFilm={props.addFilm} setLoading={setLoading} 
+            setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
       </>
    );
 }

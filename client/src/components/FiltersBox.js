@@ -4,22 +4,27 @@ import { convertToSnakeCase } from "../utilities.js";
 
 function FiltersBox(props) {
    const navigate = useNavigate();
+   const { setErrorMessage, setSuccessMessage, active, className } = props;
+
+   const handleChangeFilter = (key) => {
+      setErrorMessage(""); // clear error message
+      setSuccessMessage("");
+      navigate(`/${key}`);
+   };
 
    const filtersElements = props.filters.map(name => {
       const key = convertToSnakeCase(name);
 
       return (
-         <ListGroup.Item key={`${key}-filter`} active={props.active === key}
-            action={props.active !== name} onClick={() => {
-               props.setErrorMessage(""); // clear error message
-               navigate(`/${key}`)}}>
-            {name}
+         <ListGroup.Item key={`${key}-filter`} active={active === key}
+            action={active !== name} onClick={() => handleChangeFilter(key)}>
+               {name}
          </ListGroup.Item>
       );
    });
 
    return (
-      <ListGroup className={props.className}>
+      <ListGroup className={className}>
          {filtersElements}
       </ListGroup>
    );

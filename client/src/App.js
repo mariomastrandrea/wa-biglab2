@@ -17,6 +17,7 @@ function App() {
    const [headers, setHeaders] = useState([]);
    const [loading, setLoading] = useState(true);
    const [errorMessage, setErrorMessage] = useState("");
+   const [successMessage, setSuccessMessage] = useState("");
 
    function getFilmsFilteredBy(filter) {
       return new Promise((resolve, reject) => {
@@ -77,6 +78,7 @@ function App() {
       return new Promise((resolve, reject) => {
          setTimeout(async () => {
             setErrorMessage("");
+            setSuccessMessage("");
             let film;
 
             try {
@@ -142,6 +144,8 @@ function App() {
                      setLoading={setLoading}
                      errorMessage={errorMessage}
                      setErrorMessage={setErrorMessage}
+                     successMessage={successMessage}
+                     setSuccessMessage={setSuccessMessage}
                   />
                } />
 
@@ -158,6 +162,8 @@ function App() {
                      setLoading={setLoading}
                      errorMessage={errorMessage}
                      setErrorMessage={setErrorMessage}
+                     successMessage={successMessage}
+                     setSuccessMessage={setSuccessMessage}
                   />
                } />
 
@@ -168,6 +174,7 @@ function App() {
                      loading={loading}
                      setErrorMessage={setErrorMessage}
                      errorMessage={errorMessage}
+                     setSuccessMessage={setSuccessMessage}
                   />
                } />
 
@@ -179,6 +186,7 @@ function App() {
                      loading={loading}
                      errorMessage={errorMessage}
                      setErrorMessage={setErrorMessage}
+                     setSuccessMessage={setSuccessMessage}
                   />
                } />
             </Routes>
