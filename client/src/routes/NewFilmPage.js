@@ -25,7 +25,7 @@ function NewFilmPage(props) {
          </Row>
 
          { // if there was a connection error -> show the error message
-            errorMessage && <ErrorBox message={errorMessage} />}
+            errorMessage && <ErrorBox>{errorMessage}</ErrorBox>}
       
          {loading && <SpinnerBox small={true} /> }
          <FilmForm addFilm={props.addFilm} setLoading={setLoading} 
