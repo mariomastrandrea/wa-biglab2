@@ -9,7 +9,7 @@ function FilmRows(props) {
 
    return (
       library.map((film) =>
-         <FilmRow setFilmFavorite={props.setFilmFavorite} setFilmRating={props.setFilmRating}
+         <FilmRow editFilm={props.editFilm} setFilmRating={props.setFilmRating}
             deleteFilm={props.deleteFilm} film={film} key={`film-${film.id}`} setLoading={props.setLoading} />)
    );
 }
@@ -35,7 +35,11 @@ function FilmRow(props) {
             <span className={filmTitleClass}>{film.title}</span>
          </td>
          <td key="film-favorite">
-            <Form.Check onChange={(event) => props.setFilmFavorite(film.id, event.target.checked)}
+            <Form.Check onChange={async (event) => {
+               event.target.disabled=true;
+               await props.editFilm({...film, favorite: event.target.checked});
+               event.target.disabled=false;
+            }}
                type="checkbox" label="Favorite" checked={film.favorite} className="action-icon-wrapper" />
          </td>
          <td key="film-watchdate">{film.watchdate?.format("MMMM D, YYYY")}</td>

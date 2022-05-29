@@ -20,8 +20,9 @@ function Home(props) {
       filters, headers,
       getFilmsFilteredBy,
       films, deleteFilm,
-      setFilmRating, setFilmFavorite,
-      successMessage, setSuccessMessage
+      setFilmRating,
+      successMessage, setSuccessMessage,
+      editFilm
    } = props;
 
    const activeFilter = props.activeFilter || param.activeFilter?.toLowerCase();
@@ -64,7 +65,7 @@ function Home(props) {
                   {successMessage && <SuccessBox>{successMessage}</SuccessBox>}
 
                   <Row as="main" className="px-4">
-                     <FilmTable setFilmFavorite={setFilmFavorite} setFilmRating={setFilmRating} loading={loading}
+                     <FilmTable editFilm={editFilm} setFilmRating={setFilmRating} loading={loading}
                         deleteFilm={deleteFilm} headers={headers} films={films} activeFilter={activeFilter} setLoading={setLoading} />
                   </Row>
 

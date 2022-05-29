@@ -8,7 +8,7 @@ import Home from "./routes/Home";
 import NewFilmPage from "./routes/NewFilmPage";
 import EditFilmPage from "./routes/EditFilmPage";
 import { fetchAllFilms, fetchFilteredFilms, storeNewFilm, 
-   updateFilm, updateFilmFavorite, deleteFilm, fetchFilm } from './API';
+   updateFilm, deleteFilm, fetchFilm } from './API';
 
 function App() {
    // states
@@ -93,32 +93,6 @@ function App() {
       });
    };
 
-   // * TODO: integrate API call (using updateFilmFavorite()) instead of 
-   // modifying the films state, and update all films *
-   function setFilmFavorite(id, favorite) {
-      setFilms(old => old.map(film => {
-         let newFilm = { ...film };
-
-         if (film.id === id)
-            newFilm.favorite = favorite;
-
-         return newFilm;
-      }));
-   }
-
-   // * TODO: integrate API call (using updateFilm()) instead of 
-   // modifying the films state, and then update all films *
-   function setFilmRating(id, newRating) {
-      setFilms(old => old.map(film => {
-         let newFilm = { ...film };
-
-         if (film.id === id)
-            newFilm.rating = newRating;
-
-         return newFilm;
-      }));
-   }
-
    // * TODO: integrate API call (using deleteFilm()) instead of 
    // modifying the films state, and then update all films *
    function deleteFilm(id) {
@@ -136,8 +110,6 @@ function App() {
                      activeFilter={"all"}
                      headers={headers}
                      films={films}
-                     setFilmFavorite={setFilmFavorite}
-                     setFilmRating={setFilmRating}
                      deleteFilm={deleteFilm}
                      getFilmsFilteredBy={getFilmsFilteredBy}
                      loading={loading}
@@ -146,6 +118,7 @@ function App() {
                      setErrorMessage={setErrorMessage}
                      successMessage={successMessage}
                      setSuccessMessage={setSuccessMessage}
+                     editFilm={editFilm}
                   />
                } />
 
@@ -154,8 +127,6 @@ function App() {
                      filters={filters}
                      headers={headers}
                      films={films}
-                     setFilmFavorite={setFilmFavorite}
-                     setFilmRating={setFilmRating}
                      deleteFilm={deleteFilm}
                      getFilmsFilteredBy={getFilmsFilteredBy}
                      loading={loading}
@@ -164,6 +135,7 @@ function App() {
                      setErrorMessage={setErrorMessage}
                      successMessage={successMessage}
                      setSuccessMessage={setSuccessMessage}
+                     editFilm={editFilm}
                   />
                } />
 
