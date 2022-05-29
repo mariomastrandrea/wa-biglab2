@@ -43,7 +43,7 @@ function Home(props) {
 
    // check if the specified filter exist, otherwise return a blank page
    if (!filters.some(filter => filter === revertFromSnakeCase(activeFilter)))
-      pageContent = <ErrorBox message="Error: please specify an existing filter" />;
+      pageContent = <ErrorBox>{"Error: please specify an existing filter"}</ErrorBox>;
    else
       pageContent =
          <Row className='h-100'>

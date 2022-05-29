@@ -53,13 +53,13 @@ function EditFilmPage(props) {
    if (errorMessage && !film)  // if there was a connection error retrieving the film -> show the error message only
       return <>
          {headerContent}
-         <ErrorBox message={errorMessage} />
+         <ErrorBox>{errorMessage}</ErrorBox>
       </>;
 
    if (errorMessage && film) // if there was an error during the film update -> show the error message and keep the film data
       return <>
          {headerContent}
-         <ErrorBox message={errorMessage} />
+         <ErrorBox>{errorMessage}</ErrorBox>
          <FilmForm editMode={true} editFilm={props.editFilm} film={film}
             setLoading={setLoading} setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
       </>;
@@ -69,7 +69,7 @@ function EditFilmPage(props) {
    if (!film) // film not found 
       return <>
          {headerContent}
-         <ErrorBox message="ERROR: please search for a correct film ID" />
+         <ErrorBox>{"ERROR: please search for a correct film ID"}</ErrorBox>
       </>;
 
    // all ok
