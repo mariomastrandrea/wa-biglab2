@@ -149,6 +149,11 @@ async function updateFilm(film) {
    }
 }
 
+
+async function updateFilmFavorite(favorite) {
+   // TODO: to be implemented
+}
+
 async function deleteFilm(filmId) {
    // TODO: to be implemented
 }
@@ -159,6 +164,7 @@ export {
    fetchFilteredFilms, 
    storeNewFilm, 
    updateFilm, 
+   updateFilmFavorite, 
    deleteFilm, 
    fetchFilm
 };
