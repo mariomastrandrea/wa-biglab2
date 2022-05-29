@@ -7,7 +7,7 @@ class FilmDAO {
    static instance;    // singleton instance
 
    constructor() {
-      this.db = dbConnection;
+      this.#db = dbConnection;
    }
 
    static getFilmDAOInstance() {
@@ -23,12 +23,12 @@ class FilmDAO {
          const sqlQuery = `SELECT * 
                               FROM films`;
 
-         this.db.all(sqlQuery, (err, rows) => {
+         this.#db.all(sqlQuery, (err, rows) => {
             if (err)
                reject(err);
             else
                resolve(rows.map(row =>
-                  new Film(row.id, row.title, row.favorite, row.watchdate, row.rating)));
+                  new Film(row.id, row.title, !!row.favorite, row.watchdate, row.rating)));
          });
       });
    }
@@ -59,21 +59,22 @@ class FilmDAO {
       }
 
       return new Promise((resolve, reject) => {
-         this.db.all(sql, args, (err, rows) => {
+         this.#db.all(sql, args, (err, rows) => {
             if (err) {
-               return reject(err);
+               reject(err);
+               return;
             }
 
             //a very dirty workaround because the date is stored in the DB as text
             if (filter === "seen-last-month")
-               return resolve(rows.filter(
+               resolve(rows.filter(
                   row => dayjs().diff(dayjs(row.watchdate), 'day') <= 30
                ).map(
-                  row => new Film(row.id, row.title, row.favorite, row.watchdate, row.rating)
+                  row => new Film(row.id, row.title, !!row.favorite, row.watchdate, row.rating)
                ));
-
-            return resolve(rows.map(row =>
-               new Film(row.id, row.title, row.favorite, row.watchdate, row.rating)));
+            else
+               resolve(rows.map(row =>
+                  new Film(row.id, row.title, !!row.favorite, row.watchdate, row.rating)));
          });
       });
    }
@@ -81,14 +82,13 @@ class FilmDAO {
    // retrieve a film given its id
    getFilm(id) {
       return new Promise((resolve, reject) => {
-         this.db.get("SELECT * FROM films WHERE id=?", [id], (err, row) => {
-            if (err) {
+         this.#db.get("SELECT * FROM films WHERE id=?", [id], (err, row) => {
+            if (err)
                reject(err);
-            }
-            else if (!row) 
-               return null;
+            else if (!row)
+               resolve(null);
             else
-               resolve(new Film(row.id, row.title, row.favorite, row.watchdate, row.rating));
+               resolve(new Film(row.id, row.title, !!row.favorite, row.watchdate, row.rating));
          })
       });
    }
@@ -98,14 +98,14 @@ class FilmDAO {
       const newTitle = newFilm.title;
       const newFavorite = newFilm.favorite;
       const newWatchdate = newFilm.watchdate;
-      const newRating = newFilm.rating;
+      const newRating = newFilm.rating ?? 0;
       const newUser = 1;  // * temporary arbitrary data *
 
       return new Promise((resolve, reject) => {
          const sqlStatement = `INSERT INTO films(title, favorite, watchdate, rating, user)
                                   VALUES (?, ?, ?, ?, ?)`;
 
-         const params = [newTitle, newFavorite, newWatchdate, newRating, newUser];
+         const params = [newTitle, newFavorite ? 1 : 0, newWatchdate, newRating, newUser];
 
          this.#db.run(sqlStatement, params, function (err) {
             if (err)
@@ -123,7 +123,7 @@ class FilmDAO {
       const newTitle = newFilm.title;
       const newFavorite = newFilm.favorite;
       const newWatchdate = newFilm.watchdate;
-      const newRating = newFilm.rating;
+      const newRating = newFilm.rating ?? 0;
       const newUser = 1;  // * temporary arbitrary data *
 
       return new Promise((resolve, reject) => {
@@ -131,7 +131,7 @@ class FilmDAO {
                                SET title=?, favorite=?, watchdate=?, rating=?, user=?
                                WHERE id=?`;
 
-         const params = [newTitle, newFavorite, newWatchdate, newRating, newUser, filmId];
+         const params = [newTitle, newFavorite ? 1 : 0, newWatchdate, newRating, newUser, filmId];
 
          this.#db.run(sqlStatement, params, function (err) {
             if (err)
@@ -145,16 +145,15 @@ class FilmDAO {
    deleteFilm(id) {
       return new Promise((resolve, reject) => {
          const sql = 'DELETE FROM films WHERE id=?';
+         
          this.#db.run(sql, [id], function (err) {
-            if (err) 
+            if (err)
                reject(err);
-            else 
+            else
                resolve(this.changes > 0);
          });
-
       });
    }
-
 }
 
 module.exports = FilmDAO.getFilmDAOInstance;

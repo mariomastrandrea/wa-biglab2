@@ -14,7 +14,7 @@ function FilmTable(props) {
             {props.loading ? <></> :
                <FilmRows setFilmFavorite={props.setFilmFavorite} setFilmRating={props.setFilmRating}
                   deleteFilm={props.deleteFilm} films={props.films}
-                  key={`filter-${props.activeFilter}`} />
+                  key={`filter-${props.activeFilter}`} setLoading={props.setLoading} />
             }
          </tbody>
 

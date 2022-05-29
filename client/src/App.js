@@ -8,7 +8,7 @@ import Home from "./routes/Home";
 import NewFilmPage from "./routes/NewFilmPage";
 import EditFilmPage from "./routes/EditFilmPage";
 import { fetchAllFilms, fetchFilteredFilms, storeNewFilm, 
-   updateFilm, setFilmFavorite, deleteFilm, fetchFilm } from './API';
+   updateFilm, updateFilmFavorite, deleteFilm, fetchFilm } from './API';
 
 function App() {
    // states
@@ -18,10 +18,21 @@ function App() {
    const [loading, setLoading] = useState(true);
    const [errorMessage, setErrorMessage] = useState("");
 
-   async function getFilmsFilteredBy(filter) {
-      const films = filter === 'all' ?
-         await fetchAllFilms() : await fetchFilteredFilms(filter);
-      setFilms(films);
+   function getFilmsFilteredBy(filter) {
+      return new Promise((resolve, reject) => {
+         setTimeout(async () => {   // to simulate a long request
+            try {
+               const films = filter === 'all' ?
+               await fetchAllFilms() : await fetchFilteredFilms(filter);
+               setFilms(films);
+               resolve();
+            }
+            catch(err) {
+               reject(err);
+            }
+         }, 
+         2000);
+      });
    }
 
    // at first, get all films from the server
@@ -30,24 +41,71 @@ function App() {
       setHeaders(loadFilmHeaders());
    }, []);
 
-   async function addFilm(film) {
-      await storeNewFilm(film);
+   function addFilm(film) {
+      return new Promise((resolve, reject) => {
+         setTimeout(async () => {   // to simulate a long request
+            try {
+               await storeNewFilm(film);
+               await getFilmsFilteredBy('all');
+               setLoading(false);
+               resolve(true);
+            }
+            catch(err) {
+               reject(err);
+            }
+         }, 2000);
+      });
    }
 
-   async function editFilm(film) {
-      await editFilm(film);
+   function editFilm(film) {
+      return new Promise((resolve, reject) => {
+         setTimeout(async () => {   // to simulate a long request
+            try {
+               await updateFilm(film);
+               await getFilmsFilteredBy('all');
+               setLoading(false);
+               resolve(true);
+            } 
+            catch (err) {
+               reject(err);
+            }
+         }, 2000);
+      });
    }
 
-   async function getFilm(id) {
-      return await fetchFilm(id);
+   function getFilm(id) {
+      return new Promise((resolve, reject) => {
+         setTimeout(async () => {
+            setErrorMessage("");
+            let film;
+
+            try {
+               film = await fetchFilm(id);
+            }
+            catch(err) {
+               reject(err);
+            }
+
+            resolve(film);
+         }, 2000);
+      });
    };
 
-   // TODO: integrate API calls below
+   // * TODO: integrate API call (using updateFilmFavorite()) instead of 
+   // modifying the films state, and update all films *
+   function setFilmFavorite(id, favorite) {
+      setFilms(old => old.map(film => {
+         let newFilm = { ...film };
 
-   function deleteFilm(id) {
-      setFilms(old => old.filter((film) => film.id !== id));
+         if (film.id === id)
+            newFilm.favorite = favorite;
+
+         return newFilm;
+      }));
    }
 
+   // * TODO: integrate API call (using updateFilm()) instead of 
+   // modifying the films state, and then update all films *
    function setFilmRating(id, newRating) {
       setFilms(old => old.map(film => {
          let newFilm = { ...film };
@@ -59,15 +117,10 @@ function App() {
       }));
    }
 
-   function setFilmFavorite(id, favorite) {
-      setFilms(old => old.map(film => {
-         let newFilm = { ...film };
-
-         if (film.id === id)
-            newFilm.favorite = favorite;
-
-         return newFilm;
-      }));
+   // * TODO: integrate API call (using deleteFilm()) instead of 
+   // modifying the films state, and then update all films *
+   function deleteFilm(id) {
+      setFilms(old => old.filter((film) => film.id !== id));
    }
 
    // render the page only if the films loading is finished
@@ -112,6 +165,9 @@ function App() {
                   <NewFilmPage
                      addFilm={addFilm}
                      setLoading={setLoading}
+                     loading={loading}
+                     setErrorMessage={setErrorMessage}
+                     errorMessage={errorMessage}
                   />
                } />
 
@@ -122,6 +178,7 @@ function App() {
                      setLoading={setLoading}
                      loading={loading}
                      errorMessage={errorMessage}
+                     setErrorMessage={setErrorMessage}
                   />
                } />
             </Routes>

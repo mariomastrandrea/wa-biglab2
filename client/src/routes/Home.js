@@ -7,6 +7,7 @@ import AddButton from '../components/AddButton';
 import ErrorBox from '../components/ErrorBox';
 import FilmTable from '../components/filmComponents/FilmTable';
 import FilmLibraryNavbar from '../components/filmComponents/FilmLibraryNavbar.js';
+import SpinnerBox from '../components/SpinnerBox.js';
 
 
 function Home(props) {
@@ -26,15 +27,12 @@ function Home(props) {
    useEffect(() => {
       setLoading(true);
 
-      setTimeout(async () => {   
-         setErrorMessage(""); // clear error message
 
-         // to simulate a long request
-         getFilmsFilteredBy(activeFilter).then(() => setLoading(false)).catch(() => {
-            setErrorMessage("An error occurred retrieving films from the server");
-            setLoading(false);
-         });
-      }, 2000);
+      getFilmsFilteredBy(activeFilter).then(() => setLoading(false)).catch(() => {
+         setErrorMessage("An error occurred retrieving films from the server");
+         setLoading(false);
+      });
+
 
       // eslint-disable-next-line
    }, [activeFilter]);
@@ -49,7 +47,7 @@ function Home(props) {
          <Row className='h-100'>
             {/* sidebar */}
             <Col as="aside" className="bg-light col-3 p-4 h-100">
-               <FiltersBox className="h-100" filters={filters} active={activeFilter} />
+               <FiltersBox className="h-100" filters={filters} active={activeFilter} setErrorMessage={setErrorMessage} />
             </Col>
 
             {/* main content */}
@@ -63,16 +61,10 @@ function Home(props) {
 
                   <Row as="main" className="px-4">
                      <FilmTable setFilmFavorite={setFilmFavorite} setFilmRating={setFilmRating} loading={loading}
-                        deleteFilm={deleteFilm} headers={headers} films={films} activeFilter={activeFilter} />
+                        deleteFilm={deleteFilm} headers={headers} films={films} activeFilter={activeFilter} setLoading={setLoading} />
                   </Row>
 
-                  {loading ?
-                     <Row className="p-4 d-flex justify-content-center">
-                        <Spinner className="me-5" animation="border" role="status">
-                           <span className="visually-hidden">Loading...</span>
-                        </Spinner>
-                     </Row> : <></>
-                  }
+                  {loading ? <SpinnerBox /> : <></>}
 
                   <Row className="m-1">
                      <AddButton>+</AddButton>
@@ -84,7 +76,7 @@ function Home(props) {
    return (
       <>
          <Row as="header">
-            <FilmLibraryNavbar />
+            <FilmLibraryNavbar setLoading={setLoading} setErrorMessage={setErrorMessage} />
          </Row>
          {pageContent}
       </>

@@ -10,7 +10,9 @@ function FiltersBox(props) {
 
       return (
          <ListGroup.Item key={`${key}-filter`} active={props.active === key}
-            action={props.active !== name} onClick={() => navigate(`/${key}`)}>
+            action={props.active !== name} onClick={() => {
+               props.setErrorMessage(""); // clear error message
+               navigate(`/${key}`)}}>
             {name}
          </ListGroup.Item>
       );

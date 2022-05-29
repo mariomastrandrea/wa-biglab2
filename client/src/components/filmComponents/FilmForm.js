@@ -4,14 +4,19 @@ import { useNavigate } from 'react-router-dom';
 import { Film } from '../../FilmLibrary'
 
 function FilmForm(props) {
+   const {
+      film, setLoading, 
+      setErrorMessage, editMode,
+      editFilm, addFilm 
+   } = props;
+
    const defaultValues = {
-      id: props.film ? props.film.id : '',
-      title: props.film ? props.film.title : '',
-      favorite: props.film ? props.film.favorite : false,
-      watchdate: props.film ?
-         (props.film.watchdate ? props.film.watchdate.format("YYYY-MM-DD") : '')
-         : '',
-      rating: props.film ? (props.film.rating ?? 0) : 0
+      id: film ? film.id : '',
+      title: film ? film.title : '',
+      favorite: film ? film.favorite : false,
+      watchdate: film ?
+         (film.watchdate ? film.watchdate.format("YYYY-MM-DD") : '') : '',
+      rating: film ? (film.rating ?? 0) : 0
    }
 
    const [id, setId] = useState(defaultValues['id']);
@@ -25,17 +30,25 @@ function FilmForm(props) {
       event.preventDefault();
       const newFilm = new Film(id, title, favorite, watchdate, rating);
 
-      if (props.film) {/* edit mode */
-         await props.editFilm(newFilm);
+      setLoading(true);
+      setErrorMessage("");
+
+      try {
+         if (editMode) /* edit mode */
+            await editFilm(newFilm);
+         else            /* add mode */
+            await addFilm(newFilm);
       }
-      else {           /* add mode */
-         await props.addFilm(newFilm);
+      catch(error) {
+         setErrorMessage("Something went wrong with your request");
+         setLoading(false);
+         return;
       }
 
       navigate("/");
    }
 
-   const handleCancel = () => {
+   const handleReset = () => {
       setId(defaultValues['id']);
       setTitle(defaultValues['title']);
       setFavorite(defaultValues['favorite']);
@@ -43,21 +56,27 @@ function FilmForm(props) {
       setRating(defaultValues['rating']);
    }
 
+   const handleCancel = () => {
+      setLoading(true);
+      setErrorMessage("");
+      navigate("/");
+   }
+
    return (
       <>
          <Row className="mt-3">
             <Col></Col>
-            <Col as="main" xs={5} className='my-2 p-2'>
+            <Col as="main" xs={9} sm={7} lg={6} xl={5} className='my-2 p-2'>
                <div style={{
                   borderColor: 'grey', borderWidth: 2, borderStyle: 'dotted',
                   borderRadius: 10, padding: '0.5em 1.75em'
                }}>
                   <Form onSubmit={handleSubmit}>
-                     <Form.Group className='my-3'>
+                     {editMode && <Form.Group className='my-3'>
                         <Form.Label>Id</Form.Label>
-                        <Form.Control type="text" value={id} required={true} placeholder="Film Id"
+                        <Form.Control type="text" value={id} disabled={true} required={true} placeholder="Film Id"
                            onChange={(event) => { setId(event.target.value) }}></Form.Control>
-                     </Form.Group>
+                     </Form.Group>}
 
                      <Form.Group className='my-3'>
                         <Form.Label>Title</Form.Label>
@@ -80,11 +99,12 @@ function FilmForm(props) {
                      <Form.Group className='my-3'>
                         <Form.Label>Rating</Form.Label>
                         <Form.Control type="number" value={rating} required={false}
-                           onChange={(event) => { setRating(event.target.value) }} min={0} max={5}></Form.Control>
+                           onChange={(event) => { setRating(Number(event.target.value) ?? 0) }} min={0} max={5}></Form.Control>
                      </Form.Group>
 
                      <Form.Group className='my-4' align="right">
-                        <Button variant='outline-warning' onClick={handleCancel} className="me-1 mt-2">Cancel</Button>
+                        <Button variant='outline-danger' onClick={handleCancel} className="me-1 mt-2">Cancel</Button>
+                        <Button variant='outline-warning' onClick={handleReset} className="mx-1 mt-2">Reset</Button>
                         <Button variant='outline-success' type="submit" className="ms-1 mt-2">Confirm</Button>
                      </Form.Group>
                   </Form>

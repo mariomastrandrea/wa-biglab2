@@ -1,6 +1,5 @@
-const res = require("express/lib/response");
 const getFilmDAOInstance = require("../dao/FilmDAO");
-const { isInt, isNum } = require("../utilities");
+const { isInt, isNum, int } = require("../utilities");
 const filmDAO = getFilmDAOInstance();
 
 const Film = require("../models/Film");
@@ -22,7 +21,16 @@ async function getAllFilms(req, res) {
 // GET /films/:filmId
 async function getFilm(req, res) {
    try {
-      const film = await filmDAO.getFilm(Number(req.params.filmId));
+      let { filmId } = req.params;
+
+      if (!filmIdIsValid(filmId)) {
+         return res.status(422).json({
+            error: "Unprocessable Entity - Invalid URL parameter"
+         });
+      }
+
+      filmId = int(filmId);
+      const film = await filmDAO.getFilm(filmId);
 
       if (!film) {
          return res.status(404).end();
@@ -118,7 +126,7 @@ async function updateFilm(req, res) {
       }
 
       // check film existence (TODO: to be reviewed)
-      const film = await filmDAO.get(filmId); // receives a number
+      const film = await filmDAO.getFilm(filmId); // receives a number
 
       if (!film) {    // film not found
          return res.status(404).json({
@@ -238,8 +246,9 @@ function watchdateIsValid(watchdate) {
 
 // integer in [0,5]
 function ratingIsValid(rating) {
-   return isNum(rating) && isInt(rating) &&
-      rating >= 0 && rating <= 5;
+   return rating === null || 
+      (isNum(rating) && isInt(rating) &&
+         rating >= 0 && rating <= 5);
 }
 // #endregion
 

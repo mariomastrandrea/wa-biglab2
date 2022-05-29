@@ -2,9 +2,11 @@ const express = require('express');
 const filmAPI = require("./api/FilmAPI");
 const userAPI = require("./api/UserAPI");
 const cors = require("cors");
+const morgan = require("morgan");
 
 const PORT = 3001;
 app = new express();
+app.use(morgan('dev'));
 app.use(express.json());
 
 const corsOptions = {

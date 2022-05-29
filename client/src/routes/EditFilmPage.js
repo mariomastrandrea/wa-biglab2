@@ -4,41 +4,74 @@ import ErrorBox from "../components/ErrorBox";
 import FilmLibraryNavbar from "../components/filmComponents/FilmLibraryNavbar";
 import FilmForm from "../components/filmComponents/FilmForm";
 import { useEffect, useState } from "react";
+import SpinnerBox from "../components/SpinnerBox";
 
 function EditFilmPage(props) {
    const filmId = Number(useParams().filmId);
-   const [film, setFilm] = useState({});
-   const { loading, errorMessage, getFilm, setLoading } = props;
+   const [film, setFilm] = useState(null);
+   const { loading, errorMessage, getFilm, setLoading, setErrorMessage } = props;
 
    useEffect(() => {
       getFilm(filmId).then(film => {
          setFilm(film);
          setLoading(false);
-      });
+      })
+         .catch(() => {
+            setErrorMessage("Cannot load the requested film")
+            setLoading(false);
+         });
+      // eslint-disable-next-line
    }, []);
 
+   const headerContent =
+      <Row as="header">
+         <FilmLibraryNavbar title="Edit film" setLoading={setLoading} setErrorMessage={setErrorMessage} />
+      </Row>
+
+   if (loading && !film) { // if the page is loading -> display only the spinner
+      return <>
+         {headerContent}
+         <SpinnerBox />
+      </>;
+   }
+
+   if (loading && film) {  // the update is in progress
+      return <>
+         {headerContent}
+         <SpinnerBox small={true} />
+         <FilmForm editMode={true} editFilm={props.editFilm} film={film}
+            setLoading={setLoading} setErrorMessage={setErrorMessage} loading={loading} />
+      </>;
+   }
+
+   if (errorMessage && !film)  // if there was a connection error retrieving the film -> show the error message only
+      return <>
+         {headerContent}
+         <ErrorBox message={errorMessage} />
+      </>;
+
+   if (errorMessage && film) // if there was an error during the film update -> show the error message and keep the film data
+      return <>
+         {headerContent}
+         <ErrorBox message={errorMessage} />
+         <FilmForm editMode={true} editFilm={props.editFilm} film={film}
+            setLoading={setLoading} setErrorMessage={setErrorMessage} />
+      </>;
+
+   // * there isn't any error here *
+
+   if (!film) // film not found 
+      return <>
+         {headerContent}
+         <ErrorBox message="ERROR: please search for a correct film ID" />
+      </>;
+
+   // all ok
    return (
       <>
-         <Row as="header">
-            <FilmLibraryNavbar title="Edit film" />
-         </Row>
-
-         {loading ?  // if the page is loading -> display only the spinner
-            <Row className="p-5 mt-5 d-flex justify-content-center">
-               <Spinner animation="border" role="status">
-                  <span className="visually-hidden">Loading...</span>
-               </Spinner>
-            </Row> :
-
-            (errorMessage ?   // if there was a connection error -> show the error message only
-               <ErrorBox message={errorMessage} /> :
-               (film ?    
-                  // after the page is loaded, without any error, display the film form if the film exist, an error otherwise
-                  <FilmForm editFilm={props.editFilm} film={film} /> :
-                  <ErrorBox message="ERROR: please search a correct film ID" />
-               )
-            )
-         }
+         {headerContent}
+         <FilmForm editMode={true} editFilm={props.editFilm} film={film}
+            setLoading={setLoading} setErrorMessage={setErrorMessage} />
       </>
    );
 }

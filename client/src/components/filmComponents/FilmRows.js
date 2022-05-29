@@ -10,7 +10,7 @@ function FilmRows(props) {
    return (
       library.map((film) =>
          <FilmRow setFilmFavorite={props.setFilmFavorite} setFilmRating={props.setFilmRating}
-            deleteFilm={props.deleteFilm} film={film} key={`film-${film.id}`} />)
+            deleteFilm={props.deleteFilm} film={film} key={`film-${film.id}`} setLoading={props.setLoading} />)
    );
 }
 
@@ -18,11 +18,17 @@ function FilmRow(props) {
    const film = props.film;
    const filmTitleClass = `${film.favorite ? "favorite-" : ""}film-title`;
    const navigate = useNavigate();
+   const setLoading = props.setLoading;
+
+   function navigateToEditFilm(id) {
+      setLoading(true); 
+      navigate(`/editFilm/${id}`);
+   }
 
    return (
       <tr>
          <td key="film-title">
-            <PencilSquare onClick={() => navigate(`/editFilm/${film.id}`)}
+            <PencilSquare onClick={() => navigateToEditFilm(film.id)}
                className="me-1 action-icon" size="0.95em" />
             <Trash onClick={() => props.deleteFilm(film.id)}
                className="me-3 action-icon" size="0.95em" />

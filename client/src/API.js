@@ -23,6 +23,7 @@ async function fetchAllFilms() {
    catch (error) {
       // network error...
       console.log(error);
+      throw error;
    }
 }
 
@@ -47,6 +48,7 @@ async function fetchFilm(filmId) {
    catch (error) {
       // network error...
       console.log(error);
+      throw error;
    }
 }
 
@@ -72,6 +74,7 @@ async function fetchFilteredFilms(filter) {
    catch (error) {
       // network error...
       console.log(error);
+      throw error;
    }
 }
 
@@ -89,7 +92,7 @@ async function storeNewFilm(film) {
          body: JSON.stringify({
             title: film.title,
             favorite: film.favorite,
-            watchdate: film.watchdate,
+            watchdate: film.watchdate?.format("YYYY-MM-DD") ?? null,
             rating: film.rating
          })
       });
@@ -105,6 +108,7 @@ async function storeNewFilm(film) {
    catch (err) {
       // network connection error
       console.log(err);
+      throw err;
    }
 }
 
@@ -122,7 +126,7 @@ async function updateFilm(film) {
          body: JSON.stringify({
             title: film.title,
             favorite: film.favorite,
-            watchdate: film.watchdate,
+            watchdate: film.watchdate?.format("YYYY-MM-DD") ?? null,
             rating: film.rating
          })
       });
@@ -141,11 +145,12 @@ async function updateFilm(film) {
    catch (err) {
       // network connection error
       console.log(err);
+      throw err;
    }
 }
 
 
-async function setFilmFavorite(favorite) {
+async function updateFilmFavorite(favorite) {
    // TODO: to be implemented
 }
 
@@ -154,4 +159,12 @@ async function deleteFilm(filmId) {
 }
 
 
-export { fetchAllFilms, fetchFilteredFilms, storeNewFilm, updateFilm, setFilmFavorite, deleteFilm, fetchFilm };
+export {
+   fetchAllFilms, 
+   fetchFilteredFilms, 
+   storeNewFilm, 
+   updateFilm, 
+   updateFilmFavorite, 
+   deleteFilm, 
+   fetchFilm
+};
