@@ -150,8 +150,33 @@ async function updateFilm(film) {
 }
 
 
-async function updateFilmFavorite(favorite) {
-   // TODO: to be implemented
+async function updateFilmFavorite(id, favorite) {
+   try {
+      const response = await fetch(`${APIurl}films/${id}`, {
+         method: "PATCH",
+         headers: {
+            "Content-Type": "application/json",
+         },
+         body: JSON.stringify({
+            favorite: favorite,
+         })
+      });
+
+      if (response.status === 422 || response.status === 404) {
+         return null;
+      }
+      else if (!response.ok) {
+         // application error
+         const errorText = await response.text();
+         throw TypeError(errorText);
+      }
+
+      return true;
+   } catch(err) {
+      // network connection error
+      console.log(err);
+      throw err;
+   }
 }
 
 async function deleteFilm(filmId) {

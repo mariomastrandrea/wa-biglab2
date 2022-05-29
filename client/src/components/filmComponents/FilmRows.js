@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap'
 import { PencilSquare, Trash, Star, StarFill } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
@@ -35,7 +35,11 @@ function FilmRow(props) {
             <span className={filmTitleClass}>{film.title}</span>
          </td>
          <td key="film-favorite">
-            <Form.Check onChange={(event) => props.setFilmFavorite(film.id, event.target.checked)}
+            <Form.Check onChange={async (event) => {
+               event.target.disabled=true;
+               await props.setFilmFavorite(film.id, event.target.checked);
+               event.target.disabled=false;
+            }}
                type="checkbox" label="Favorite" checked={film.favorite} className="action-icon-wrapper" />
          </td>
          <td key="film-watchdate">{film.watchdate?.format("MMMM D, YYYY")}</td>

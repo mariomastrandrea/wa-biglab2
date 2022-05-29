@@ -32,7 +32,7 @@ function App() {
                reject(err);
             }
          }, 
-         2000);
+         1000);
       });
    }
 
@@ -54,7 +54,7 @@ function App() {
             catch(err) {
                reject(err);
             }
-         }, 2000);
+         }, 1000);
       });
    }
 
@@ -70,7 +70,7 @@ function App() {
             catch (err) {
                reject(err);
             }
-         }, 2000);
+         }, 1000);
       });
    }
 
@@ -89,21 +89,35 @@ function App() {
             }
 
             resolve(film);
-         }, 2000);
+         }, 1000);
       });
    };
 
-   // * TODO: integrate API call (using updateFilmFavorite()) instead of 
+   //integrate API call (using updateFilmFavorite()) instead of 
    // modifying the films state, and update all films *
    function setFilmFavorite(id, favorite) {
-      setFilms(old => old.map(film => {
-         let newFilm = { ...film };
+      return new Promise((resolve, reject) => {
+         setTimeout(async () => {
+            const res = await updateFilmFavorite(id, favorite);
+            if(res===null) {
+               setErrorMessage("Error when updating film favorite");
+               reject(false);
+            }
 
-         if (film.id === id)
-            newFilm.favorite = favorite;
-
-         return newFilm;
-      }));
+            //fetch the updated film and edit the state
+            const updatedFilm = await getFilm(id);
+            setFilms((oldFilms) => {
+               return oldFilms.map(film => {
+                  if(film.id === updatedFilm.id) {
+                     return updatedFilm;
+                  }
+                  else
+                     return film;
+               });
+            });
+            resolve(true);
+         }, 1000);
+      });
    }
 
    // * TODO: integrate API call (using updateFilm()) instead of 
