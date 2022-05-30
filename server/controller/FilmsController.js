@@ -180,8 +180,8 @@ async function setFilmFavorite(req, res) {
          });
       }
 
-      film.setFavorite(req.body.favorite);
-      await filmDAO.updateFilm(film);
+      film.favorite = req.body.favorite;
+      await filmDAO.update(film);
 
       return res.status(200).send("Favorite setted");
    }
