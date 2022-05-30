@@ -29,6 +29,14 @@ main .table td, main .table th {
    padding: 0.8rem;
 }
 
+.table tr.deleting {
+   background-color: #faa;
+}
+
+.table tr.updating {
+   background-color: #bde;
+}
+
 /* set columns fixed width */
 
 #films-table td:nth-child(1),

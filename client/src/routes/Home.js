@@ -29,12 +29,10 @@ function Home(props) {
    useEffect(() => {
       setLoading(true);
 
-
       getFilmsFilteredBy(activeFilter).then(() => setLoading(false)).catch(() => {
          setErrorMessage("An error occurred retrieving films from the server");
          setLoading(false);
       });
-
 
       // eslint-disable-next-line
    }, [activeFilter]);
@@ -63,12 +61,13 @@ function Home(props) {
                   {errorMessage && <ErrorBox>{errorMessage}</ErrorBox>}
                   {successMessage && <SuccessBox>{successMessage}</SuccessBox>}
 
+                  {(loading && films.length > 0) ? <SpinnerBox small={true} /> : <></>}
                   <Row as="main" className="px-4">
                      <FilmTable setFilmFavorite={setFilmFavorite} setFilmRating={setFilmRating} loading={loading}
-                        deleteFilm={deleteFilm} headers={headers} films={films} activeFilter={activeFilter} setLoading={setLoading} />
+                        deleteFilm={deleteFilm} headers={headers} films={films} activeFilter={activeFilter} 
+                        setLoading={setLoading} setSuccessMessage={setSuccessMessage} setErrorMessage={setErrorMessage} />
                   </Row>
-
-                  {loading ? <SpinnerBox /> : <></>}
+                  {(loading && films.length === 0) ? <SpinnerBox small={true} /> : <></>}
 
                   <Row className="m-1">
                      <AddButton>+</AddButton>

@@ -38,11 +38,11 @@ function FilmForm(props) {
       try {
          if (editMode)  { /* edit mode */
             await editFilm(newFilm);
-            setSuccessMessage(`The film "${film.title}" was successfully updated`)
+            setSuccessMessage(`The film "${title}" was successfully updated`)
          }
          else {           /* add mode */
             await addFilm(newFilm);
-            setSuccessMessage(`The film "${film.title}" was successfully added`);
+            setSuccessMessage(`The film "${title}" was successfully added`);
          }
       }
       catch(error) {

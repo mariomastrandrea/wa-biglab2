@@ -162,7 +162,7 @@ async function updateFilmFavorite(id, favorite) {
          })
       });
 
-      if (response.status === 422 || response.status === 404) {
+      if (response.status === 404) {
          return null;
       }
       else if (!response.ok) {
@@ -172,46 +172,42 @@ async function updateFilmFavorite(id, favorite) {
       }
 
       return true;
-   } catch(err) {
+   } catch (err) {
       // network connection error
       console.log(err);
       throw err;
    }
 }
 
-async function deleteFilmbyId(filmId) {
-try{
-   const response = await fetch(`${APIurl}films/${filmId}`, {
-      method: "DELETE"
-   });
+async function deleteFilmById(filmId) {
+   try {
+      const response = await fetch(`${APIurl}films/${filmId}`, {
+         method: "DELETE"
+      });
 
-   if (response.status === 422 || response.status === 404) {
-      return null;
+      if (response.status === 404) {
+         return null;
+      }
+      else if (!response.ok) {
+         // application error
+         const errorText = await response.text();
+         throw TypeError(errorText);
+      }
+
+      return true;
    }
-   else if (!response.ok) {
-      // application error
-      const errorText = await response.text();
-      throw TypeError(errorText);
+   catch (err) {
+      console.log(err);
+      throw err;
    }
-
-   return true;
-
 }
-catch(err)
-{
-   console.log(err);
-   throw err;
-}
-
-}
-
 
 export {
-   fetchAllFilms, 
-   fetchFilteredFilms, 
-   storeNewFilm, 
-   updateFilm, 
-   updateFilmFavorite, 
-   deleteFilmbyId, 
+   fetchAllFilms,
+   fetchFilteredFilms,
+   storeNewFilm,
+   updateFilm,
+   updateFilmFavorite,
+   deleteFilmById,
    fetchFilm
 };

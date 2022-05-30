@@ -8,7 +8,7 @@ import Home from "./routes/Home";
 import NewFilmPage from "./routes/NewFilmPage";
 import EditFilmPage from "./routes/EditFilmPage";
 import { fetchAllFilms, fetchFilteredFilms, storeNewFilm, 
-   updateFilm, updateFilmFavorite, deleteFilmbyId, fetchFilm } from './API';
+   updateFilm, updateFilmFavorite, deleteFilmById, fetchFilm } from './API';
 
 function App() {
    // states
@@ -24,7 +24,7 @@ function App() {
          setTimeout(async () => {   // to simulate a long request
             try {
                const films = filter === 'all' ?
-               await fetchAllFilms() : await fetchFilteredFilms(filter);
+                  await fetchAllFilms() : await fetchFilteredFilms(filter);
                setFilms(films);
                resolve();
             }
@@ -86,6 +86,7 @@ function App() {
             }
             catch(err) {
                reject(err);
+               return;
             }
 
             resolve(film);
@@ -93,81 +94,75 @@ function App() {
       });
    };
 
-   //integrate API call (using updateFilmFavorite()) instead of 
-   // modifying the films state, and update all films *
-   function setFilmFavorite(id, favorite) {
+   function setFilmFavorite(id, favorite, activeFilter) {
       return new Promise((resolve, reject) => {
          setTimeout(async () => {
-            const res = await updateFilmFavorite(id, favorite);
-            if(res===null) {
-               setErrorMessage("Error when updating film favorite");
-               reject(false);
-            }
+            try {
+               const result = await updateFilmFavorite(id, favorite);
 
-            //fetch the updated film and edit the state
-            const updatedFilm = await getFilm(id);
-            setFilms((oldFilms) => {
-               return oldFilms.map(film => {
-                  if(film.id === updatedFilm.id) {
-                     return updatedFilm;
-                  }
-                  else
-                     return film;
-               });
-            });
-            resolve(true);
+               if(result === null) {
+                  setErrorMessage("Error when updating film favorite");
+                  reject(false);
+                  setLoading(false);
+                  return;
+               }
+
+               await getFilmsFilteredBy(activeFilter);
+               setLoading(false);
+               resolve(true);
+            }
+            catch(err) {
+               reject(err);
+            }
          }, 1000);
       });
    }
 
-   // * TODO: integrate API call (using updateFilm()) instead of 
-   // modifying the films state, and then update all films *
-   function setFilmRating(id, newRating) {
-    
-      return new Promise((resolve,reject)=>{
-         setTimeout(async()=>{
-            let film= await getFilm(id);
-            if(film===undefined)
-            {
-               reject(false);
-            }
-            //if the rating is the same of the old one i should not call any db function
-            if(film.rating===newRating){
-               reject(false);
-            }
-            film.rating=newRating;
-            await updateFilm(film);
-            setFilms((oldFilms)=>{
-               return oldFilms.map(x=>{
-                  if(x.id===id){
-                     return film;
-                  }
-                  else{
-                     return x;
-                  }
-               });
-            });
-            resolve(true);
-         },0);
-      })
-      
-   }
+   function setFilmRating(film, newRating, activeFilter) {
+      return new Promise((resolve, reject) => {
+         setTimeout(async () => {
+            film.rating = newRating;
 
-   // * TODO: integrate API call (using deleteFilm()) instead of 
-   // modifying the films state, and then update all films *
-   function deleteFilm(id) {
-      return new Promise((resolve,reject)=>{
-         setTimeout(async()=>{
-            let response= await deleteFilmbyId(id);
-            if(response===true){
+            try {
+               const result = await updateFilm(film);
+
+               if(result === null) {
+                  setErrorMessage("Error when updating film rating");
+                  setLoading(false);
+                  reject(false);
+                  return;
+               }
+
+               await getFilmsFilteredBy(activeFilter);
                setLoading(false);
-               setFilms((oldFilms)=>oldFilms.filter(x=>x.id!=id));
                resolve(true);
             }
-            else{
-               reject(false);
-            }
+            catch(err) {
+               reject(err);
+            }            
+         }, 1000);
+      })
+   }
 
+   function deleteFilm(id, activeFilter) {
+      return new Promise((resolve,reject)=>{
+         setTimeout(async () => {
+            try {
+               const response = await deleteFilmById(id);
+
+               if(!response) {
+                  setErrorMessage("Error when deleting film");
+                  reject(false);
+                  return;
+               }
+
+               await getFilmsFilteredBy(activeFilter)
+               setLoading(false);
+               resolve(true);
+            }
+            catch (err) {
+               reject(err);
+            }
          },1000);
       })
    }

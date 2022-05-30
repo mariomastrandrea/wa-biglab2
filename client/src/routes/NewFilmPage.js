@@ -9,7 +9,7 @@ function NewFilmPage(props) {
    const { 
       setLoading, loading, 
       setErrorMessage, errorMessage, 
-      setSuccessMessage
+      setSuccessMessage, addFilm
    } = props;
 
    useEffect(() => {
@@ -28,7 +28,7 @@ function NewFilmPage(props) {
             errorMessage && <ErrorBox>{errorMessage}</ErrorBox>}
       
          {loading && <SpinnerBox small={true} /> }
-         <FilmForm addFilm={props.addFilm} setLoading={setLoading} 
+         <FilmForm addFilm={addFilm} setLoading={setLoading} 
             setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
       </>
    );
