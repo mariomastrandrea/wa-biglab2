@@ -8,7 +8,7 @@ import Home from "./routes/Home";
 import NewFilmPage from "./routes/NewFilmPage";
 import EditFilmPage from "./routes/EditFilmPage";
 import { fetchAllFilms, fetchFilteredFilms, storeNewFilm, 
-   updateFilm, updateFilmFavorite, deleteFilm, fetchFilm } from './API';
+   updateFilm, updateFilmFavorite, deleteFilmbyId, fetchFilm } from './API';
 
 function App() {
    // states
@@ -123,20 +123,53 @@ function App() {
    // * TODO: integrate API call (using updateFilm()) instead of 
    // modifying the films state, and then update all films *
    function setFilmRating(id, newRating) {
-      setFilms(old => old.map(film => {
-         let newFilm = { ...film };
-
-         if (film.id === id)
-            newFilm.rating = newRating;
-
-         return newFilm;
-      }));
+    
+      return new Promise((resolve,reject)=>{
+         setTimeout(async()=>{
+            let film= await getFilm(id);
+            if(film===undefined)
+            {
+               reject(false);
+            }
+            //if the rating is the same of the old one i should not call any db function
+            if(film.rating===newRating){
+               reject(false);
+            }
+            film.rating=newRating;
+            await updateFilm(film);
+            setFilms((oldFilms)=>{
+               return oldFilms.map(x=>{
+                  if(x.id===id){
+                     return film;
+                  }
+                  else{
+                     return x;
+                  }
+               });
+            });
+            resolve(true);
+         },0);
+      })
+      
    }
 
    // * TODO: integrate API call (using deleteFilm()) instead of 
    // modifying the films state, and then update all films *
    function deleteFilm(id) {
-      setFilms(old => old.filter((film) => film.id !== id));
+      return new Promise((resolve,reject)=>{
+         setTimeout(async()=>{
+            let response= await deleteFilmbyId(id);
+            if(response===true){
+               setLoading(false);
+               setFilms((oldFilms)=>oldFilms.filter(x=>x.id!=id));
+               resolve(true);
+            }
+            else{
+               reject(false);
+            }
+
+         },1000);
+      })
    }
 
    // render the page only if the films loading is finished

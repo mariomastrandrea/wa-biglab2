@@ -179,8 +179,30 @@ async function updateFilmFavorite(id, favorite) {
    }
 }
 
-async function deleteFilm(filmId) {
-   // TODO: to be implemented
+async function deleteFilmbyId(filmId) {
+try{
+   const response = await fetch(`${APIurl}films/${filmId}`, {
+      method: "DELETE"
+   });
+
+   if (response.status === 422 || response.status === 404) {
+      return null;
+   }
+   else if (!response.ok) {
+      // application error
+      const errorText = await response.text();
+      throw TypeError(errorText);
+   }
+
+   return true;
+
+}
+catch(err)
+{
+   console.log(err);
+   throw err;
+}
+
 }
 
 
@@ -190,6 +212,6 @@ export {
    storeNewFilm, 
    updateFilm, 
    updateFilmFavorite, 
-   deleteFilm, 
+   deleteFilmbyId, 
    fetchFilm
 };
