@@ -45,7 +45,7 @@ function EditFilmPage(props) {
       return <>
          {headerContent}
          <SpinnerBox small={true} />
-         <FilmForm editMode={true} editFilm={props.editFilm} film={film} setLoading={setLoading}
+         <FilmForm editMode={true} editFilm={props.editFilm} film={film} setLoading={setLoading} setFilm={setFilm}
             setErrorMessage={setErrorMessage} loading={loading} setSuccessMessage={setSuccessMessage} />
       </>;
    }
@@ -60,7 +60,7 @@ function EditFilmPage(props) {
       return <>
          {headerContent}
          <ErrorBox>{errorMessage}</ErrorBox>
-         <FilmForm editMode={true} editFilm={props.editFilm} film={film}
+         <FilmForm editMode={true} editFilm={props.editFilm} film={film} setFilm={setFilm}
             setLoading={setLoading} setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
       </>;
 
@@ -76,7 +76,7 @@ function EditFilmPage(props) {
    return (
       <>
          {headerContent}
-         <FilmForm editMode={true} editFilm={props.editFilm} film={film}
+         <FilmForm editMode={true} editFilm={props.editFilm} film={film} setFilm={setFilm}
             setLoading={setLoading} setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} />
       </>
    );

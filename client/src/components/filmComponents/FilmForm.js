@@ -8,7 +8,7 @@ function FilmForm(props) {
       film, setLoading, 
       setErrorMessage, editMode,
       editFilm, addFilm,
-      setSuccessMessage 
+      setSuccessMessage , setFilm
    } = props;
 
    const defaultValues = {
@@ -30,6 +30,9 @@ function FilmForm(props) {
    const handleSubmit = async (event) => {
       event.preventDefault();
       const newFilm = new Film(id, title, favorite, watchdate, rating);
+
+      if(editMode)
+         setFilm(newFilm);
 
       setLoading(true);
       setErrorMessage("");
@@ -81,32 +84,43 @@ function FilmForm(props) {
                   <Form onSubmit={handleSubmit}>
                      {editMode && <Form.Group className='my-3'>
                         <Form.Label>Id</Form.Label>
-                        <Form.Control type="text" value={id} disabled={true} required={true} placeholder="Film Id"
-                           onChange={(event) => { setId(event.target.value) }}></Form.Control>
+                        <Form.Control type="text" value={id} disabled={true} required={true} />
                      </Form.Group>}
 
                      <Form.Group className='my-3'>
                         <Form.Label>Title</Form.Label>
                         <Form.Control type="text" value={title} required={true} placeholder="Film Title"
-                           onChange={(event) => { setTitle(event.target.value) }}></Form.Control>
+                           onChange={event => { 
+                              const newTitle = event.target.value;
+                              setTitle(newTitle); 
+                           }} />
                      </Form.Group>
 
                      <Form.Group className='my-3'>
                         <Form.Label>Favorite</Form.Label>
                         <Form.Check type="checkbox" className="form-check-inline ms-2" checked={favorite}
-                           required={false} onChange={(event) => { setFavorite(event.target.checked) }}></Form.Check>
+                           required={false} onChange={event => { 
+                              const newFavorite = event.target.checked;
+                              setFavorite(newFavorite);
+                           }}></Form.Check>
                      </Form.Group>
 
                      <Form.Group className='my-3'>
                         <Form.Label>Watchdate</Form.Label>
                         <Form.Control type="date" value={watchdate}
-                           onChange={(event) => { setWatchdate(event.target.value) }}></Form.Control>
+                           onChange={event => { 
+                              const newWatchdate = event.target.value;
+                              setWatchdate(newWatchdate);
+                           }} />
                      </Form.Group>
 
                      <Form.Group className='my-3'>
                         <Form.Label>Rating</Form.Label>
                         <Form.Control type="number" value={rating} required={false}
-                           onChange={(event) => { setRating(Number(event.target.value) ?? 0) }} min={0} max={5}></Form.Control>
+                           onChange={event => { 
+                              const newRating = Number(event.target.value) ?? 0;
+                              setRating(newRating);
+                           }} min={0} max={5} />
                      </Form.Group>
 
                      <Form.Group className='my-4' align="right">
