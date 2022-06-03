@@ -202,6 +202,51 @@ async function deleteFilmById(filmId) {
    }
 }
 
+async function login(credentials) {
+   try {
+      const response = await fetch(APIurl + 'login', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+         },
+         credentials: 'include',
+         body: JSON.stringify(credentials),
+      });
+   
+      if(response.ok) {
+         const user = await response.json();
+         return user;
+      }
+
+      const errDetails = await response.text();
+      throw errDetails;
+   }
+   catch (err) {
+      console.log(err);
+      throw err;
+   }
+};
+
+ 
+async function logout() {
+   try {
+      const response = await fetch(APIurl + 'logout', {
+         method: 'DELETE',
+         credentials: 'include'
+      });
+      
+      if (response.ok)
+         return true;
+
+      const errDetails = await response.text();
+      throw errDetails;   
+   }
+   catch(err) {
+      console.log(err);
+      throw err;
+   }
+}
+ 
 export {
    fetchAllFilms,
    fetchFilteredFilms,
@@ -209,5 +254,7 @@ export {
    updateFilm,
    updateFilmFavorite,
    deleteFilmById,
-   fetchFilm
+   fetchFilm,
+   login,
+   logout
 };

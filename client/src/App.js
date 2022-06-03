@@ -7,6 +7,7 @@ import { loadFilters, loadFilmHeaders } from "./FilmLibrary.js";
 import Home from "./routes/Home";
 import NewFilmPage from "./routes/NewFilmPage";
 import EditFilmPage from "./routes/EditFilmPage";
+import LoginPage from "./routes/LoginPage";
 import { fetchAllFilms, fetchFilteredFilms, storeNewFilm, 
    updateFilm, updateFilmFavorite, deleteFilmById, fetchFilm } from './API';
 
@@ -231,6 +232,15 @@ function App() {
                      setSuccessMessage={setSuccessMessage}
                   />
                } />
+               
+               <Route path="/login" element={
+                  <LoginPage  
+                     setLoading={setLoading} 
+                     setErrorMessage={setErrorMessage} 
+                     setSuccessMessage={setSuccessMessage}
+                     errorMessage={errorMessage}/>             
+               }/>
+
             </Routes>
          </Container>
       </BrowserRouter>

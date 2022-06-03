@@ -1,17 +1,41 @@
-import { Container, Navbar, Form } from "react-bootstrap";
+import { Container, Navbar, Form,Button } from "react-bootstrap";
 import { PersonCircle, PlayCircle } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../API";
+import { useContext } from "react";
+import UserContext from "../../UserContext";
 
 
 function FilmLibraryNavbar(props) {
    const { title, setLoading, setErrorMessage, setSuccessMessage } = props;
    const navigate = useNavigate();
+   const user = useContext(UserContext);  // TODO: useContext...
 
    function goToHome() {
       setLoading(true);
       setErrorMessage("");
       setSuccessMessage("");
       navigate("/");
+   }
+
+   function handleLogin() {
+      navigate("/login");
+   }
+
+   async function handleLogout() {
+
+      setErrorMessage("");
+      setSuccessMessage("");
+      setLoading(true);
+      
+      try {
+         await logout();
+         navigate("/login");
+      }
+      catch(err){
+         setLoading(false);
+         setErrorMessage("Something went wrong with your request")
+      }
    }
 
    return (
@@ -30,8 +54,13 @@ function FilmLibraryNavbar(props) {
                   <Form.Control id="search-box" type="text" placeholder="Search..." />
                }
             </Navbar.Collapse>
+            
+            <Navbar.Brand>
+               <PersonCircle color="white" size="1.6em" className="action-icon" />
+               <Button onClick={() => user  ? handleLogout() : handleLogin()}>{user ? "Logout" : "SignIn"}</Button>
+            </Navbar.Brand>
 
-            <PersonCircle color="white" size="1.6em" className="action-icon" />
+
          </Container>
       </Navbar>
    );
