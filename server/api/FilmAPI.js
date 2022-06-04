@@ -2,28 +2,29 @@ const express = require('express');
 const router = express.Router();
 
 const {
-    getAllFilms,
-    getFilmsByFilter,
-    getFilm,
-    createFilm,
-    updateFilm,
-    setFilmFavorite,    
-    deleteFilm          
+   getAllFilms,
+   getFilmsByFilter,
+   getFilm,
+   createFilm,
+   updateFilm,
+   setFilmFavorite,
+   deleteFilm
 } = require("../controller/FilmsController");
 
 const isLoggedIn = (req, res, next) => {
-    if (req.isAuthenticated()) {
-       return next();
-    }
-    return res.status(401).json({ error: 'Not authorized' });
- }
+   if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: 'Not authorized' });
+   }
+   
+   return next();
+}
 
-router.get("/", getAllFilms);
-router.get("/filter/:filter", getFilmsByFilter);
-router.get("/:filmId", getFilm);
-router.post("/", createFilm);
-router.put("/:filmId", updateFilm);
-router.patch("/:filmId", setFilmFavorite);  
-router.delete("/:filmId", deleteFilm);     
+router.get("/", isLoggedIn, getAllFilms);
+router.get("/filter/:filter", isLoggedIn, getFilmsByFilter);
+router.get("/:filmId", isLoggedIn, getFilm);
+router.post("/", isLoggedIn, createFilm);
+router.put("/:filmId", isLoggedIn, updateFilm);
+router.patch("/:filmId", isLoggedIn, setFilmFavorite);
+router.delete("/:filmId", isLoggedIn, deleteFilm);
 
 module.exports = router;

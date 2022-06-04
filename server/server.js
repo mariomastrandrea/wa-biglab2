@@ -29,7 +29,8 @@ app.use(cors(corsOptions));
 
 // Passport: set up local strategy
 passport.use(new LocalStrategy(async function verify(username, password, cb) {
-   const user = await userDAO.getUser(username, password); 
+   const user = await userDAO.getUser(username, password);
+
    if (!user)
       return cb(null, false, 'Incorrect username or password');
 
@@ -52,11 +53,11 @@ app.use(session({
 }));
 
 app.use(passport.authenticate('session'));
-
 // #endregion
 
-// API to create a new user session
-app.post('/api/login', function(req, res, next) {
+// #region - Authentication routes
+// * create a new user session *
+app.post('/api/login', function (req, res, next) {
    passport.authenticate('local', (err, user, info) => {
       if (err)
          return next(err);
@@ -68,28 +69,32 @@ app.post('/api/login', function(req, res, next) {
       // success, perform the login
       req.login(user, (err) => {
          if (err)
-           return next(err);
-         
+            return next(err);
+
          // req.user contains the authenticated user, we send all the user info back
          return res.status(201).json(req.user);
       });
    })(req, res, next);
 });
 
+// * delete user session *
 app.delete('/api/logout', (req, res) => {
    req.logout(() => {
-     res.end();
+      res.end();
    });
 });
 
 app.get('/api/sessions/current', (req, res) => {
-   if(req.isAuthenticated()) 
-     res.json(req.user);
+   if (req.isAuthenticated())
+      return res.status(200).json(req.user);
    else
-     res.status(401).json({error: 'Not authenticated'});
+      return res.status(204).json({ msg: 'No active session' });
 });
+// #endregion
 
+// define Film router
 app.use("/api/films", filmAPI);
 
-app.listen(PORT, () => 
+// start the server
+app.listen(PORT, () =>
    console.log(`Server running on http://localhost:${PORT}/`));

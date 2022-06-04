@@ -2,14 +2,13 @@ import { Container, Navbar, Form,Button } from "react-bootstrap";
 import { PersonCircle, PlayCircle } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../API";
-import { useContext } from "react";
-import UserContext from "../../UserContext";
-
+import { useUser, useUpdateUser } from "../../UserContext";
 
 function FilmLibraryNavbar(props) {
    const { title, setLoading, setErrorMessage, setSuccessMessage } = props;
    const navigate = useNavigate();
-   const user = useContext(UserContext);  // TODO: useContext...
+   const user = useUser(); 
+   const updateUser = useUpdateUser();
 
    function goToHome() {
       setLoading(true);
@@ -18,24 +17,31 @@ function FilmLibraryNavbar(props) {
       navigate("/");
    }
 
-   function handleLogin() {
+   function goToLogin() {
+      //setLoading(true);
+      setErrorMessage("");
+      setSuccessMessage("");
       navigate("/login");
    }
 
    async function handleLogout() {
-
       setErrorMessage("");
       setSuccessMessage("");
       setLoading(true);
       
-      try {
-         await logout();
-         navigate("/login");
-      }
-      catch(err){
-         setLoading(false);
-         setErrorMessage("Something went wrong with your request")
-      }
+      setTimeout(async () => {   // to simulate a long request (1s)
+         try {
+            await logout();
+            updateUser(undefined);  // delete user info from context
+            setSuccessMessage("You have successfully logged out");
+            setTimeout(() => setSuccessMessage(""), 3000);  // make success message disappear after 4s
+            navigate("/login");
+         }
+         catch(err){
+            setErrorMessage("Something went wrong with your request")
+            setLoading(false);
+         }
+      }, 1000);      
    }
 
    return (
@@ -57,13 +63,11 @@ function FilmLibraryNavbar(props) {
             
             <Navbar.Brand>
                <PersonCircle color="white" size="1.6em" className="action-icon" />
-               <Button onClick={() => user  ? handleLogout() : handleLogin()}>{user ? "Logout" : "SignIn"}</Button>
+               <Button onClick={() => user ? handleLogout() : goToLogin()}>{user ? "Logout" : "SignIn"}</Button>
             </Navbar.Brand>
-
-
          </Container>
       </Navbar>
    );
 }
 
-export default FilmLibraryNavbar
+export default FilmLibraryNavbar;

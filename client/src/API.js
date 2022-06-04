@@ -8,7 +8,9 @@ const APIurl = "http://localhost:3001/api/";
 async function fetchAllFilms() {
    try {
       // GET
-      const response = await fetch(`${APIurl}films`);
+      const response = await fetch(`${APIurl}films`, {
+         credentials: 'include'
+      });
 
       if (!response.ok) {
          // application error (400-599)
@@ -30,7 +32,9 @@ async function fetchAllFilms() {
 async function fetchFilm(filmId) {
    try {
       // GET
-      const response = await fetch(`${APIurl}films/${filmId}`);
+      const response = await fetch(`${APIurl}films/${filmId}`, {
+         credentials: 'include'
+      });
 
       if (response.status === 404) {
          return null;
@@ -59,7 +63,9 @@ async function fetchFilm(filmId) {
 async function fetchFilteredFilms(filter) {
    try {
       // GET
-      const response = await fetch(`${APIurl}films/filter/${filter}`);
+      const response = await fetch(`${APIurl}films/filter/${filter}`, {
+         credentials: 'include'
+      });
 
       if (!response.ok) {
          // application error (400-599)
@@ -94,7 +100,8 @@ async function storeNewFilm(film) {
             favorite: film.favorite,
             watchdate: film.watchdate?.format("YYYY-MM-DD") ?? null,
             rating: film.rating
-         })
+         }),
+         credentials: 'include'
       });
 
       if (!response.ok) {
@@ -128,7 +135,8 @@ async function updateFilm(film) {
             favorite: film.favorite,
             watchdate: film.watchdate?.format("YYYY-MM-DD") ?? null,
             rating: film.rating
-         })
+         }),
+         credentials: 'include'
       });
 
       if (response.status === 404) {
@@ -159,7 +167,8 @@ async function updateFilmFavorite(id, favorite) {
          },
          body: JSON.stringify({
             favorite: favorite,
-         })
+         }),
+         credentials: 'include'
       });
 
       if (response.status === 404) {
@@ -182,7 +191,8 @@ async function updateFilmFavorite(id, favorite) {
 async function deleteFilmById(filmId) {
    try {
       const response = await fetch(`${APIurl}films/${filmId}`, {
-         method: "DELETE"
+         method: "DELETE",
+         credentials: 'include'
       });
 
       if (response.status === 404) {
@@ -204,22 +214,22 @@ async function deleteFilmById(filmId) {
 
 async function login(credentials) {
    try {
-      const response = await fetch(APIurl + 'login', {
+      const response = await fetch(`${APIurl}login`, {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json',
          },
-         credentials: 'include',
          body: JSON.stringify(credentials),
+         credentials: 'include'
       });
    
-      if(response.ok) {
-         const user = await response.json();
-         return user;
+      if(!response.ok) {
+         const errDetails = await response.text();
+         throw errDetails;
       }
 
-      const errDetails = await response.text();
-      throw errDetails;
+      const user = await response.json();
+      return user;
    }
    catch (err) {
       console.log(err);
@@ -227,22 +237,44 @@ async function login(credentials) {
    }
 };
 
- 
 async function logout() {
    try {
-      const response = await fetch(APIurl + 'logout', {
+      const response = await fetch(`${APIurl}logout`, {
          method: 'DELETE',
          credentials: 'include'
       });
       
-      if (response.ok)
-         return true;
-
-      const errDetails = await response.text();
-      throw errDetails;   
+      if (!response.ok) {
+         const errDetails = await response.text();
+         throw errDetails;
+      }
+      
+      return true;   
    }
    catch(err) {
       console.log(err);
+      throw err;
+   }
+}
+
+async function getCurrentSession() {
+   try {
+      const response = await fetch(`${APIurl}sessions/current`, {
+         credentials: 'include'
+      });
+
+      if(response.status === 204)   
+         return null;   // no current session
+      
+      if(!response.ok) {
+         throw new TypeError(response.statusText);
+      }
+
+      const user = await response.json();
+      return user;
+   }
+   catch (err) {
+      console.err(err);
       throw err;
    }
 }
@@ -256,5 +288,6 @@ export {
    deleteFilmById,
    fetchFilm,
    login,
-   logout
+   logout,
+   getCurrentSession
 };

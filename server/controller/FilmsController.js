@@ -7,7 +7,8 @@ const Film = require("../models/Film");
 // GET /films
 async function getAllFilms(req, res) {
    try {
-      const films = await filmDAO.getAll();
+      const userId = req.user.id;
+      const films = await filmDAO.getAll(userId);
       return res.status(200).json(films);
    }
    catch (err) {
@@ -29,8 +30,9 @@ async function getFilm(req, res) {
          });
       }
 
+      const userId = req.user.id;
       filmId = int(filmId);
-      const film = await filmDAO.getFilm(filmId);
+      const film = await filmDAO.getFilm(filmId, userId);
 
       if (!film) {
          return res.status(404).end();
@@ -49,7 +51,8 @@ async function getFilm(req, res) {
 // GET /films/filter/:filter
 async function getFilmsByFilter(req, res) {
    try {
-      const film = await filmDAO.getFilmsByFilter(req.params.filter);
+      const userId = req.user.id;
+      const film = await filmDAO.getFilmsByFilter(req.params.filter, userId);
 
       if (film === undefined) {
          return res.status(404).end();
@@ -79,9 +82,11 @@ async function createFilm(req, res) {
          });
       }
 
+      const userId = req.user.id;
+
       // * create new film *
       const newFilm = new Film(null, title, favorite, watchdate, rating);
-      const newCreatedFilm = await filmDAO.create(newFilm);
+      const newCreatedFilm = await filmDAO.create(newFilm, userId);
 
       if (!newCreatedFilm) {   // a generic error occurred during creation
          return res.status(500).json({
@@ -125,8 +130,10 @@ async function updateFilm(req, res) {
          });
       }
 
-      // check film existence (TODO: to be reviewed)
-      const film = await filmDAO.getFilm(filmId); // receives a number
+      const userId = req.user.id;
+
+      // check film existence 
+      const film = await filmDAO.getFilm(filmId, userId); 
 
       if (!film) {    // film not found
          return res.status(404).json({
@@ -136,7 +143,7 @@ async function updateFilm(req, res) {
 
       // * update film *
       const newFilm = new Film(filmId, title, favorite, watchdate, rating);
-      const wasFilmUpdated = await filmDAO.update(newFilm);
+      const wasFilmUpdated = await filmDAO.update(newFilm, userId);
 
       if (!wasFilmUpdated) {   // a generic error occurred during update
          return res.status(500).json({
@@ -172,7 +179,8 @@ async function setFilmFavorite(req, res) {
          });
       }
 
-      let film = await filmDAO.getFilm(filmId);
+      const userId = req.user.id;
+      let film = await filmDAO.getFilm(filmId, userId);
 
       if (!film) {    // film not found
          return res.status(404).json({
@@ -181,7 +189,7 @@ async function setFilmFavorite(req, res) {
       }
 
       film.favorite = req.body.favorite;
-      await filmDAO.update(film);
+      await filmDAO.update(film, userId);
 
       return res.status(200).send("Favorite setted");
    }
@@ -201,14 +209,16 @@ async function deleteFilm(req, res) {
          });
       }
 
-      const film = await filmDAO.getFilm(filmId);
+      const userId = req.user.id;
+      const film = await filmDAO.getFilm(filmId, userId);
+
       if(!film) {
          return res.status(404).json({
             error: "Film not found"
          });
       }
 
-      await filmDAO.deleteFilm(filmId);
+      await filmDAO.deleteFilm(filmId, userId);
       return res.status(204).send("No content");
    }
    catch (err) {

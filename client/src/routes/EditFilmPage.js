@@ -1,14 +1,20 @@
+import { useEffect, useState } from "react";
 import { Row } from "react-bootstrap";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ErrorBox from "../components/ErrorBox";
+import SpinnerBox from "../components/SpinnerBox";
 import FilmLibraryNavbar from "../components/filmComponents/FilmLibraryNavbar";
 import FilmForm from "../components/filmComponents/FilmForm";
-import { useEffect, useState } from "react";
-import SpinnerBox from "../components/SpinnerBox";
+import { useUser, useUpdateUser } from "../UserContext";
+import { getCurrentSession } from "../API";
+
 
 function EditFilmPage(props) {
    const filmId = Number(useParams().filmId);
    const [film, setFilm] = useState(null);
+   const user = useUser();
+   const updateUser = useUpdateUser();
+   const navigate = useNavigate();
 
    const { 
       loading, errorMessage, getFilm, 
@@ -17,14 +23,38 @@ function EditFilmPage(props) {
    } = props;
 
    useEffect(() => {
-      getFilm(filmId).then(film => {
-         setFilm(film);
-         setLoading(false);
-      })
+      if(!user) {
+         getCurrentSession().then(user => {
+            if(!user) {
+               // user is not authenticated yet -> redirect to login page
+               setLoading(false);
+               navigate("/login");
+               return;
+            }
+
+            updateUser(user);
+            // user is logged in -> edit his film
+            getFilm(filmId).then(film => {
+               setFilm(film);
+               setLoading(false);
+            })
+            .catch(() => {
+               setErrorMessage("Cannot load the requested film")
+               setLoading(false);
+            });
+         });
+      }
+      else {  // user is logged in -> edit his film
+         getFilm(filmId).then(film => {
+            setFilm(film);
+            setLoading(false);
+         })
          .catch(() => {
             setErrorMessage("Cannot load the requested film")
             setLoading(false);
          });
+      }
+
       // eslint-disable-next-line
    }, []);
 

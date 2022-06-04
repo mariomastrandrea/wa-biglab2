@@ -24,25 +24,23 @@ class UserDAO {
                console.log(err);
                reject(err);
             }
+            else if (!row) {
+               resolve(null); // email not found
+            }
             else {
-               if(row === undefined) {
-                  return resolve(undefined);
-               }
-               let user = new User(row.id, row.email, row.name, row.hash, row.salt);
-               crypto.scrypt(password,user.salt,32,function(err,hashedpass){
-                  if(err) {
+               let user = new User(row.id, row.email, row.name);
+
+               crypto.scrypt(password, row.salt, 32, function (err, hashedPassword) {
+                  if(err) 
                      reject(err);
-                  }
-                  else{
-                     if(!crypto.timingSafeEqual(Buffer.from(row.hash, 'hex'), hashedpass))
-                        resolve(false);
-                     else
-                        resolve(user);
-                  }
+                  else if (!crypto.timingSafeEqual(Buffer.from(row.hash, 'hex'), hashedPassword))
+                     resolve(false);   // password not correct
+                  else
+                     resolve(user);    // email and password correct
                });
             }
          });
-      })
+      });
    }
 }
 

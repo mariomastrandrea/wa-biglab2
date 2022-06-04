@@ -1,18 +1,23 @@
 import { Container, Row, Col } from 'react-bootstrap';
 import { useEffect } from 'react';
-import { useParams } from "react-router-dom";
-import { revertFromSnakeCase } from "../utilities.js"
+import { useNavigate, useParams } from "react-router-dom";
+import { revertFromSnakeCase } from "../utilities"
 import FiltersBox from '../components/FiltersBox';
 import AddButton from '../components/AddButton';
 import ErrorBox from '../components/ErrorBox';
 import FilmTable from '../components/filmComponents/FilmTable';
-import FilmLibraryNavbar from '../components/filmComponents/FilmLibraryNavbar.js';
-import SpinnerBox from '../components/SpinnerBox.js';
-import SuccessBox from '../components/SuccessBox.js';
+import FilmLibraryNavbar from '../components/filmComponents/FilmLibraryNavbar';
+import SpinnerBox from '../components/SpinnerBox';
+import SuccessBox from '../components/SuccessBox';
+import { useUser, useUpdateUser } from '../UserContext';
+import { getCurrentSession } from '../API';
 
 
 function Home(props) {
    const param = useParams();
+   const user = useUser();
+   const updateUser = useUpdateUser();
+   const navigate = useNavigate();
 
    const {
       loading, setLoading,
@@ -29,13 +34,42 @@ function Home(props) {
    useEffect(() => {
       setLoading(true);
 
-      getFilmsFilteredBy(activeFilter).then(() => setLoading(false)).catch(() => {
-         setErrorMessage("An error occurred retrieving films from the server");
-         setLoading(false);
-      });
+      if(!user) {
+         getCurrentSession().then(user => {
+            if(!user) {
+               // user is not authenticated yet -> redirect to login page
+               setLoading(false);
+               navigate("/login");
+               return;
+            }
 
+            updateUser(user);
+            // user is logged in -> retrieve his films
+            getFilmsFilteredBy(activeFilter).then(() => {
+               setLoading(false);
+            })
+            .catch(() => {
+               setErrorMessage("An error occurred retrieving films from the server");
+               setLoading(false);
+            });
+         });
+      }
+      else {   // user is logged in -> retrieve his films
+         getFilmsFilteredBy(activeFilter).then(() => {
+            setLoading(false);
+         })
+         .catch(() => {
+            setErrorMessage("An error occurred retrieving films from the server");
+            setLoading(false);
+         });
+      }
+      
       // eslint-disable-next-line
    }, [activeFilter]);
+
+   if(!user) {
+      return <></>;
+   }
 
    let pageContent;
 
@@ -60,6 +94,11 @@ function Home(props) {
 
                   {errorMessage && <ErrorBox>{errorMessage}</ErrorBox>}
                   {successMessage && <SuccessBox>{successMessage}</SuccessBox>}
+
+                  {activeFilter === 'all' && !loading && films && films.length === 0 && 
+                     <SuccessBox>
+                        {`Welcome to your film library! Add your first film clicking the '+' button below`}
+                     </SuccessBox>}
 
                   {(loading && films.length > 0) ? <SpinnerBox small={true} /> : <></>}
                   <Row as="main" className="px-4">

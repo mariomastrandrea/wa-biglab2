@@ -18,12 +18,13 @@ class FilmDAO {
    }
 
    // returns an array containing all the existing films in the DB
-   getAll() {
+   getAll(userId) {
       return new Promise((resolve, reject) => {
-         const sqlQuery = `SELECT * 
-                              FROM films`;
+         const sqlQuery = `SELECT id, title, favorite, watchdate, rating 
+                           FROM films
+                           WHERE user=?`;
 
-         this.#db.all(sqlQuery, (err, rows) => {
+         this.#db.all(sqlQuery, [userId], (err, rows) => {
             if (err)
                reject(err);
             else
@@ -34,27 +35,27 @@ class FilmDAO {
    }
 
    // returns an array containing all the films satisfying the specified filter
-   getFilmsByFilter(filter) {
+   getFilmsByFilter(filter, userId) {
       let sql;
-      let args = new Array();
+      let args = [userId];
 
       switch (filter) {
          case "all":
-            sql = "SELECT * FROM films";
+            sql = "SELECT * FROM films WHERE user=?";
             break;
          case "favorite":
-            sql = "SELECT * FROM films WHERE favorite=1";
+            sql = "SELECT * FROM films WHERE favorite=1 AND user=?";
             break;
          case "best-rated":
-            sql = "SELECT * FROM films WHERE rating=5";
+            sql = "SELECT * FROM films WHERE rating=5 AND user=?";
             break;
          case "unseen":
-            sql = "SELECT * FROM films WHERE watchdate IS NULL";
+            sql = "SELECT * FROM films WHERE watchdate IS NULL AND user=?";
             break;
          case "seen-last-month":
-            sql = "SELECT * FROM films";
+            sql = "SELECT * FROM films WHERE user=?";
          default:
-            sql = "SELECT * FROM films";
+            sql = "SELECT * FROM films WHERE user=?";
             break;
       }
 
@@ -68,7 +69,10 @@ class FilmDAO {
             //a very dirty workaround because the date is stored in the DB as text
             if (filter === "seen-last-month")
                resolve(rows.filter(
-                  row => dayjs().diff(dayjs(row.watchdate), 'day') <= 30
+                  row => {
+                     const diff = dayjs().diff(dayjs(row.watchdate), 'day');
+                     return diff >= 0 && diff <= 30
+                  }
                ).map(
                   row => new Film(row.id, row.title, !!row.favorite, row.watchdate, row.rating)
                ));
@@ -80,9 +84,13 @@ class FilmDAO {
    }
 
    // retrieve a film given its id
-   getFilm(id) {
+   getFilm(id, userId) {
       return new Promise((resolve, reject) => {
-         this.#db.get("SELECT * FROM films WHERE id=?", [id], (err, row) => {
+         const sqlQuery = `SELECT id, title, favorite, watchdate, rating
+                           FROM films
+                           WHERE id=? AND user=?`;
+
+         this.#db.get(sqlQuery, [id, userId], (err, row) => {
             if (err)
                reject(err);
             else if (!row)
@@ -94,18 +102,17 @@ class FilmDAO {
    }
 
    // creates a new persistent Film in the DB and returns the new Film object with its assigned ID
-   create(newFilm) {
+   create(newFilm, userId) {
       const newTitle = newFilm.title;
       const newFavorite = newFilm.favorite;
       const newWatchdate = newFilm.watchdate;
       const newRating = newFilm.rating ?? 0;
-      const newUser = 1;  // * temporary arbitrary data *
 
       return new Promise((resolve, reject) => {
          const sqlStatement = `INSERT INTO films(title, favorite, watchdate, rating, user)
-                                  VALUES (?, ?, ?, ?, ?)`;
+                               VALUES (?, ?, ?, ?, ?)`;
 
-         const params = [newTitle, newFavorite ? 1 : 0, newWatchdate, newRating, newUser];
+         const params = [newTitle, newFavorite ? 1 : 0, newWatchdate, newRating, userId];
 
          this.#db.run(sqlStatement, params, function (err) {
             if (err)
@@ -118,20 +125,19 @@ class FilmDAO {
 
    // update the provided film with the information contained in it
    // returns 'true' if the film was successfully updated; 'false' otherwise
-   update(newFilm) {
+   update(newFilm, userId) {
       const filmId = newFilm.id;
       const newTitle = newFilm.title;
       const newFavorite = newFilm.favorite;
       const newWatchdate = newFilm.watchdate;
       const newRating = newFilm.rating ?? 0;
-      const newUser = 1;  // * temporary arbitrary data *
 
       return new Promise((resolve, reject) => {
          const sqlStatement = `UPDATE films 
                                SET title=?, favorite=?, watchdate=?, rating=?, user=?
                                WHERE id=?`;
 
-         const params = [newTitle, newFavorite ? 1 : 0, newWatchdate, newRating, newUser, filmId];
+         const params = [newTitle, newFavorite ? 1 : 0, newWatchdate, newRating, userId, filmId];
 
          this.#db.run(sqlStatement, params, function (err) {
             if (err)
@@ -142,11 +148,12 @@ class FilmDAO {
       });
    }
 
-   deleteFilm(id) {
+   deleteFilm(id, userId) {
       return new Promise((resolve, reject) => {
-         const sql = 'DELETE FROM films WHERE id=?';
+         const sql = `DELETE FROM films 
+                      WHERE id=? AND user=?`;
          
-         this.#db.run(sql, [id], function (err) {
+         this.#db.run(sql, [id, userId], function (err) {
             if (err)
                reject(err);
             else

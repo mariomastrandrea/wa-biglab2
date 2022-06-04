@@ -82,3 +82,8 @@ button.circular-button {
 a {
    color: inherit
 }
+
+/* login form style */
+.login-form {
+   background-color: #fdfbf3;
+}
