@@ -88,7 +88,7 @@ app.get('/api/sessions/current', (req, res) => {
    if (req.isAuthenticated())
       return res.status(200).json(req.user);
    else
-      return res.status(204).json({ msg: 'No active session' });
+      return res.status(401).json({ err: 'Unauthorized' });
 });
 // #endregion
 

@@ -95,7 +95,7 @@ async function createFilm(req, res) {
       }
 
       // film was successfully created
-      return res.status(201).send("Created");
+      return res.status(201).end();
    }
    catch (err) {
       console.log(err);
@@ -152,7 +152,7 @@ async function updateFilm(req, res) {
       }
 
       // film was successfully update
-      return res.status(200).send("Ok");
+      return res.status(200).end();
    }
    catch (err) {
       console.log(err);
@@ -163,8 +163,8 @@ async function updateFilm(req, res) {
 }
 
 //PATCH /:filmId
-//basically it calls an update film function with the new Favorite setted
-async function setFilmFavorite(req, res) {
+//basically it calls an update film function for a specified field only
+async function updateFilmField(req, res) {
    try {
       let { filmId } = req.params;
 
@@ -173,7 +173,7 @@ async function setFilmFavorite(req, res) {
             error: "Unprocessable Entity - Invalid URL parameter"
          });
       }
-      if (!favoriteIsValid(req.body.favorite)) {
+      if (req.body.favorite !== undefined && !favoriteIsValid(req.body.favorite)) {
          return res.status(422).json({
             error: "Unprocessable Entity - Invalid favorite body parameter"
          });
@@ -188,10 +188,12 @@ async function setFilmFavorite(req, res) {
          });
       }
 
-      film.favorite = req.body.favorite;
+      if(req.body.favorite !== undefined)
+         film.favorite = req.body.favorite;
+
       await filmDAO.update(film, userId);
 
-      return res.status(200).send("Favorite setted");
+      return res.status(200).end();
    }
    catch (err) {
       console.log(err);
@@ -219,7 +221,7 @@ async function deleteFilm(req, res) {
       }
 
       await filmDAO.deleteFilm(filmId, userId);
-      return res.status(204).send("No content");
+      return res.status(204).end();
    }
    catch (err) {
       console.log(err);
@@ -268,6 +270,6 @@ module.exports = {
    getFilm,
    createFilm,
    updateFilm,
-   setFilmFavorite,
+   updateFilmField,
    deleteFilm
 };

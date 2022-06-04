@@ -5,7 +5,7 @@ import { logout } from "../../API";
 import { useUser, useUpdateUser } from "../../UserContext";
 
 function FilmLibraryNavbar(props) {
-   const { title, setLoading, setErrorMessage, setSuccessMessage } = props;
+   const { title, setLoading, setErrorMessage, setSuccessMessage, activeFilter } = props;
    const navigate = useNavigate();
    const user = useUser(); 
    const updateUser = useUpdateUser();
@@ -29,7 +29,7 @@ function FilmLibraryNavbar(props) {
       setSuccessMessage("");
       setLoading(true);
       
-      setTimeout(async () => {   // to simulate a long request (1s)
+      //setTimeout(async () => {   // to simulate a long request (1s)
          try {
             await logout();
             updateUser(undefined);  // delete user info from context
@@ -41,7 +41,7 @@ function FilmLibraryNavbar(props) {
             setErrorMessage("Something went wrong with your request")
             setLoading(false);
          }
-      }, 1000);      
+      //}, 1000);      
    }
 
    return (
@@ -50,7 +50,8 @@ function FilmLibraryNavbar(props) {
             <Navbar.Toggle />
 
             <Navbar.Brand className="d-flex align-items-center">
-               <PlayCircle onClick={() => goToHome()} size="1.2em" className="me-1 action-icon" />
+               <PlayCircle onClick={activeFilter === 'all' ? () => undefined : () => goToHome()} 
+                  size="1.2em" className="me-1 action-icon" />
                <span>Film Library</span>
             </Navbar.Brand>
 
@@ -62,8 +63,8 @@ function FilmLibraryNavbar(props) {
             </Navbar.Collapse>
             
             <Navbar.Brand>
-               <PersonCircle color="white" size="1.6em" className="action-icon" />
                <Button onClick={() => user ? handleLogout() : goToLogin()}>{user ? "Logout" : "SignIn"}</Button>
+               <PersonCircle color="white" size="1.6em" className="action-icon" />
             </Navbar.Brand>
          </Container>
       </Navbar>

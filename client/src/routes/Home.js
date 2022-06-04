@@ -119,7 +119,7 @@ function Home(props) {
       <>
          <Row as="header">
             <FilmLibraryNavbar setLoading={setLoading} setErrorMessage={setErrorMessage} 
-               setSuccessMessage={setSuccessMessage} />
+               setSuccessMessage={setSuccessMessage} activeFilter={activeFilter} />
          </Row>
          {pageContent}
       </>

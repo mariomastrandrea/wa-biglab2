@@ -7,7 +7,7 @@ const {
    getFilm,
    createFilm,
    updateFilm,
-   setFilmFavorite,
+   updateFilmField,
    deleteFilm
 } = require("../controller/FilmsController");
 
@@ -24,7 +24,7 @@ router.get("/filter/:filter", isLoggedIn, getFilmsByFilter);
 router.get("/:filmId", isLoggedIn, getFilm);
 router.post("/", isLoggedIn, createFilm);
 router.put("/:filmId", isLoggedIn, updateFilm);
-router.patch("/:filmId", isLoggedIn, setFilmFavorite);
+router.patch("/:filmId", isLoggedIn, updateFilmField);
 router.delete("/:filmId", isLoggedIn, deleteFilm);
 
 module.exports = router;

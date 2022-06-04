@@ -263,7 +263,7 @@ async function getCurrentSession() {
          credentials: 'include'
       });
 
-      if(response.status === 204)   
+      if(response.status === 401)   
          return null;   // no current session
       
       if(!response.ok) {

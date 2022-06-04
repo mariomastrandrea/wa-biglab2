@@ -61,7 +61,8 @@ function LoginPage(props) {
 
       setLoading(true);
 
-      setTimeout(async () => {   // simulate a long request (1s)
+
+      //setTimeout(async () => {   // simulate a long request (1s)
          try {
             const user = await login({
                username: email,
@@ -78,7 +79,7 @@ function LoginPage(props) {
             setLoading(false);
             return;
          }
-      }, 1000);
+      //}, 1000);
    }
 
    const headerContent =

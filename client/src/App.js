@@ -8,8 +8,10 @@ import Home from "./routes/Home";
 import NewFilmPage from "./routes/NewFilmPage";
 import EditFilmPage from "./routes/EditFilmPage";
 import LoginPage from "./routes/LoginPage";
-import { fetchAllFilms, fetchFilteredFilms, storeNewFilm,
-   updateFilm, updateFilmFavorite, deleteFilmById, fetchFilm } from './API';
+import {
+   fetchAllFilms, fetchFilteredFilms, storeNewFilm,
+   updateFilm, updateFilmFavorite, deleteFilmById, fetchFilm
+} from './API';
 import { UserProvider } from './UserContext';
 
 
@@ -22,7 +24,8 @@ function App() {
    const [errorMessage, setErrorMessage] = useState("");
    const [successMessage, setSuccessMessage] = useState("");
 
-   function getFilmsFilteredBy(filter) {
+   async function getFilmsFilteredBy(filter) {
+      /*
       return new Promise((resolve, reject) => {
          setTimeout(async () => {   // to simulate a long request
             try {
@@ -34,9 +37,19 @@ function App() {
             catch (err) {
                reject(err);
             }
-         },
-            1000);
+         }, 1000);
       });
+      */
+
+      try {
+         const films = filter === 'all' ?
+            await fetchAllFilms() : await fetchFilteredFilms(filter);
+         setFilms(films);
+         return films;
+      }
+      catch (err) {
+         throw err;
+      }
    }
 
    // at first, get all films from the server
@@ -45,7 +58,8 @@ function App() {
       setHeaders(loadFilmHeaders());
    }, []);
 
-   function addFilm(film) {
+   async function addFilm(film) {
+      /*
       return new Promise((resolve, reject) => {
          setTimeout(async () => {   // to simulate a long request
             try {
@@ -59,9 +73,21 @@ function App() {
             }
          }, 1000);
       });
+      */
+
+      try {
+         await storeNewFilm(film);
+         await getFilmsFilteredBy('all');
+         setLoading(false);
+         return true;
+      }
+      catch (err) {
+         throw err;
+      }
    }
 
-   function editFilm(film) {
+   async function editFilm(film) {
+      /*
       return new Promise((resolve, reject) => {
          setTimeout(async () => {   // to simulate a long request
             try {
@@ -75,9 +101,21 @@ function App() {
             }
          }, 1000);
       });
+      */
+
+      try {
+         await updateFilm(film);
+         await getFilmsFilteredBy('all');
+         setLoading(false);
+         return true;
+      }
+      catch (err) {
+         throw err;
+      }
    }
 
-   function getFilm(id) {
+   async function getFilm(id) {
+      /*
       return new Promise((resolve, reject) => {
          setTimeout(async () => {
             setErrorMessage("");
@@ -95,9 +133,22 @@ function App() {
             resolve(film);
          }, 1000);
       });
+      */
+
+      setErrorMessage("");
+      setSuccessMessage("");
+
+      try {
+         const film = await fetchFilm(id);
+         return film;
+      }
+      catch (err) {
+         throw err;
+      }
    };
 
-   function setFilmFavorite(id, favorite, activeFilter) {
+   async function setFilmFavorite(id, favorite, activeFilter) {
+      /*
       return new Promise((resolve, reject) => {
          setTimeout(async () => {
             try {
@@ -119,9 +170,27 @@ function App() {
             }
          }, 1000);
       });
+      */
+
+      try {
+         const result = await updateFilmFavorite(id, favorite);
+
+         if (result === null) {
+            setErrorMessage("Error when updating film favorite");
+            throw TypeError("Error when updating film favorite");
+         }
+
+         await getFilmsFilteredBy(activeFilter);
+         setLoading(false);
+         return true;
+      }
+      catch (err) {
+         throw err;
+      }
    }
 
-   function setFilmRating(film, newRating, activeFilter) {
+   async function setFilmRating(film, newRating, activeFilter) {
+      /*
       return new Promise((resolve, reject) => {
          setTimeout(async () => {
             film.rating = newRating;
@@ -145,9 +214,29 @@ function App() {
             }
          }, 1000);
       })
+      */
+
+      film.rating = newRating;
+
+      try {
+         const result = await updateFilm(film);
+
+         if (result === null) {
+            setErrorMessage("Error when updating film rating");
+            throw TypeError("Error when updating film rating");
+         }
+
+         await getFilmsFilteredBy(activeFilter);
+         setLoading(false);
+         return true;
+      }
+      catch (err) {
+         throw err;
+      }
    }
 
-   function deleteFilm(id, activeFilter) {
+   async function deleteFilm(id, activeFilter) {
+      /*
       return new Promise((resolve, reject) => {
          setTimeout(async () => {
             try {
@@ -168,6 +257,23 @@ function App() {
             }
          }, 1000);
       })
+      */
+
+      try {
+         const response = await deleteFilmById(id);
+
+         if (!response) {
+            setErrorMessage("Error when deleting film");
+            throw TypeError("Error when deleting film")
+         }
+
+         await getFilmsFilteredBy(activeFilter)
+         setLoading(false);
+         return true;
+      }
+      catch (err) {
+         throw err;
+      }
    }
 
    // render the page only if the films loading is finished
@@ -243,7 +349,7 @@ function App() {
                         setErrorMessage={setErrorMessage}
                         setSuccessMessage={setSuccessMessage}
                         errorMessage={errorMessage}
-                        successMessage={successMessage} 
+                        successMessage={successMessage}
                      />
                   } />
                </Routes>
